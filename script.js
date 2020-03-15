@@ -1,6 +1,63 @@
 var canvas = document.getElementById("renderCanvas"); // Get the canvas element
 var engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
 
+/*****************************Detect Devices*********************************************/
+
+var gamepadApi = {
+    connected: false,
+    axes: [],
+    buttons: [],
+};
+
+var forwardVector;
+var rightVector;
+
+// function setGamepadApi(gamepad) {
+//     let gamepadId = detectUserGamepad(gamepad);
+//     let platform = detectUserPlatform();
+//
+//     if (gamepadId === 0 && platform === 0){
+//         // gamepadApi.axes[0] = gamepad.axes[0];
+//         // gamepadApi.axes[1] = gamepad.axes[1];
+//         // gamepadApi.axes[2] = gamepad.axes[5];
+//         // gamepadApi.axes[3] = gamepad.axes[6];
+//         //
+//         // gamepadApi.axes[4] = gamepad.axes[9];
+//     }else if ((gamepadId === 0 && platform === 1) || (gamepadId === 1 && platform === 1)){
+//         // gamepadApi.axes = gamepad.axes;
+//     }else if (gamepadId === 1 && platform === 0){
+//         // gamepadApi.axes[0] = gamepad.axes[0];
+//         // gamepadApi.axes[1] = gamepad.axes[1];
+//         // gamepadApi.axes[2] = gamepad.axes[2];
+//         // gamepadApi.axes[3] = gamepad.axes[5];
+//         //
+//         // gamepadApi.axes[4] = gamepad.axes[9];
+//     }else {
+//         console.log("Ziadna podpora OS alebo Gamepadu");
+//     }
+// }
+
+window.addEventListener("gamepadconnected", function (e) {
+    console.log("Connected");
+    var gp = navigator.getGamepads()[e.gamepad.index];
+    gamepadApi.connected = gp.connected;
+    gamepadApi.axes = gp.axes;
+    gamepadApi.buttons = gp.buttons;
+
+
+    console.log(gamepadApi);
+});
+window.addEventListener("gamepaddisconnected", function (e) {
+    console.log("Disconnected");
+    var gp = navigator.getGamepads()[e.gamepad.index];
+    gamepadApi.connected = false;
+    gamepadApi.axes = [];
+    gamepadApi.buttons = [];
+    console.log(gamepadApi);
+});
+
+/*****************************Detect Devices*********************************************/
+
 /******* Add the create scene function ******/
 var createScene = function() {
     var scene = new BABYLON.Scene(engine);
@@ -134,7 +191,6 @@ var createScene = function() {
     /*****************************Particles to Show Movement********************************************/
 
 
-
     /****************************Key Controls************************************************/
 
     var map ={}; //object for multiple key presses
@@ -167,99 +223,230 @@ var createScene = function() {
 
     var F; // frames per second
 
-    const maxSpeed = 15;
+    const maxForwardSpeed = 20;
+    const maxBackwardSpeed = maxForwardSpeed / 2;
+
+    const turnBorder = Math.PI / 6;
 
     /****************************End Variables************************************************/
 
 
 
     /****************************Animation******************************************************/
+    scene.registerBeforeRender(function () {
+
+        if(gamepadApi.connected){
+            var gp = navigator.getGamepads()[0];
+            gamepadApi.axes = gp.axes;
+            gamepadApi.buttons = gp.buttons;
+            // for (let i=0; i<gamepadApi.buttons.length; i++){
+            //     if (gamepadApi.buttons[i].pressed){
+            //         // if(i === 0){
+            //         //     sphere.position.x += 0.01;
+            //         // }
+            //         // if(i === 1){
+            //         //     sphere.position.x -= 0.01;
+            //         // }
+            //         console.log(i);
+            //     }
+            // }
+            rightVector = (gamepadApi.axes[0].toFixed(2)) * turnBorder;
+            forwardVector = (gamepadApi.axes[1].toFixed(2)) * maxForwardSpeed;
+
+            // console.log(rightVector);
+            // for (let i=0; i < gamepadApi.axes.length; i++){
+            //     axes0.text = gamepadApi.axes[0].toString();
+            //     axes1.text = gamepadApi.axes[1].toString();
+            //     axes5.text = gamepadApi.axes[5].toString();
+            //     axes6.text = gamepadApi.axes[6].toString();
+            //     axes9.text = gamepadApi.axes[9].toString();
+            //     // connectionText.text = gamepadApi.axes[1].toString();
+            //     // sphere.position.x = Number(Math.round(gamepadApi.axes[0]+'e2')+'e-2')/10;
+            //     // sphere.position.x = gamepadApi.axes[0]*10;
+            //     // sphere.position.y = gamepadApi.axes[1]*-10;
+            // }
+            // console.log(forwardVector);
+        }
+    });
 
     scene.registerAfterRender(function() {
         F = engine.getFps();
 
-        if((map["w"] || map["W"]) && D < maxSpeed ) {
+        /** Forward, Backward movement **/
+        // console.log(forwardVector);
+        if(forwardVector < 0  && D >= 0 && D < Math.abs(forwardVector)){
             D += 1;
+            console.log("Speed UP");
         }
 
-        if((map["s"] || map["S"]) && D > -maxSpeed ) {
+        if(forwardVector > 0  && D > 0 && D < Math.abs(forwardVector)){
+            D -= 0.5;
+            console.log("Speed BREAK");
+        }
+
+        if(forwardVector > 0  && D <= 0 && D > -Math.abs(forwardVector)){
             D -= 1;
+            console.log("Speed BACKWARD");
         }
 
-        if(!(map["w"] || map["W"]) && !(map["s"] || map["S"]) && D !== 0) {
-            if (D > 0.15)
-                D -= 0.15;
-            else if (D < -0.15)
-                D += 0.15;
+        if(forwardVector < 0  && D < 0 && D > -Math.abs(forwardVector)){
+            D += 0.5;
+            console.log("Speed BACKWARD BREAK");
+        }
+
+        // if((map["w"] || map["W"]) && D < maxForwardSpeed ) {
+        //     D += 1;
+        // }
+        //
+        // if((map["s"] || map["S"]) && D > -maxForwardSpeed ) {
+        //     D -= 1;
+        // }
+
+        if(!(map["w"] || map["W"]) && !(map["s"] || map["S"]) && D !== 0 && forwardVector === 0) {
+            if (D > 0.05)
+                D -= 0.05;
+            else if (D < -0.05)
+                D += 0.05;
             else
                 D = 0;
         }
 
-        if(!(map["a"] || map["A"]) && !(map["d"] || map["D"]) && theta !== 0) {
-            if (theta > 0)
-                deltaTheta = -Math.PI/252;
-            else if (theta < 0)
-                deltaTheta = Math.PI/252;
-            theta += deltaTheta;
-            pivotFI.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
-            pivotFO.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
-            if(Math.abs(theta) > 0.00000001) {
-                NR = A/2 +L/Math.tan(theta);
-            }
-            else {
-                theta = 0;
-                NR = 0;
-            }
-            pivot.translate(BABYLON.Axis.Z, NR - R, BABYLON.Space.LOCAL);
-            carBody.translate(BABYLON.Axis.Z, R - NR, BABYLON.Space.LOCAL);
-            R = NR;
-        }
+        // if(!(map["a"] || map["A"]) && !(map["d"] || map["D"]) && rightVector===0 && theta !== 0) {
+        //     if (theta > 0)
+        //         deltaTheta = -Math.PI/252;
+        //     else if (theta < 0)
+        //         deltaTheta = Math.PI/252;
+        //     theta += deltaTheta;
+        //     pivotFI.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
+        //     pivotFO.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
+        //     if(Math.abs(theta) > 0.00000001) {
+        //         NR = A/2 +L/Math.tan(theta);
+        //     }
+        //     else {
+        //         theta = 0;
+        //         NR = 0;
+        //     }
+        //     pivot.translate(BABYLON.Axis.Z, NR - R, BABYLON.Space.LOCAL);
+        //     carBody.translate(BABYLON.Axis.Z, R - NR, BABYLON.Space.LOCAL);
+        //     R = NR;
+        // }
 
 
         var distance = D/F;
         psi = D/(r * F);
 
-        if((map["a"] || map["A"]) && -Math.PI/6 < theta) {
+        if(rightVector < 0.0 && rightVector < theta) {
 
             deltaTheta = -Math.PI/252;
             theta += deltaTheta;
             pivotFI.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
             pivotFO.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
-            if(Math.abs(theta) > 0.00000001) {
-                NR = A/2 +L/Math.tan(theta);
-            }
-            else {
+            if (Math.abs(theta) > 0.00000001) {
+                NR = A / 2 + L / Math.tan(theta);
+            } else {
                 theta = 0;
                 NR = 0;
             }
             pivot.translate(BABYLON.Axis.Z, NR - R, BABYLON.Space.LOCAL);
             carBody.translate(BABYLON.Axis.Z, R - NR, BABYLON.Space.LOCAL);
             R = NR;
+
         }
 
-        if((map["d"] || map["D"])  && theta < Math.PI/6) {
+        if(rightVector <= 0.0 && rightVector > theta) {
 
             deltaTheta = Math.PI/252;
             theta += deltaTheta;
             pivotFI.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
             pivotFO.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
-            if(Math.abs(theta) > 0.00000001) {
-                NR = A/2 +L/Math.tan(theta);
-            }
-            else {
+            if (Math.abs(theta) > 0.00000001) {
+                NR = A / 2 + L / Math.tan(theta);
+            } else {
                 theta = 0;
                 NR = 0;
             }
             pivot.translate(BABYLON.Axis.Z, NR - R, BABYLON.Space.LOCAL);
             carBody.translate(BABYLON.Axis.Z, R - NR, BABYLON.Space.LOCAL);
             R = NR;
+
         }
+
+        if(rightVector > 0.0 && rightVector > theta) {
+
+            deltaTheta = Math.PI/252;
+            theta += deltaTheta;
+            pivotFI.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
+            pivotFO.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
+            if (Math.abs(theta) > 0.00000001) {
+                NR = A / 2 + L / Math.tan(theta);
+            } else {
+                theta = 0;
+                NR = 0;
+            }
+            pivot.translate(BABYLON.Axis.Z, NR - R, BABYLON.Space.LOCAL);
+            carBody.translate(BABYLON.Axis.Z, R - NR, BABYLON.Space.LOCAL);
+            R = NR;
+
+        }
+
+        if(rightVector >= 0.0 && rightVector < theta) {
+
+            deltaTheta = -Math.PI/252;
+            theta += deltaTheta;
+            pivotFI.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
+            pivotFO.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
+            if (Math.abs(theta) > 0.00000001) {
+                NR = A / 2 + L / Math.tan(theta);
+            } else {
+                theta = 0;
+                NR = 0;
+            }
+            pivot.translate(BABYLON.Axis.Z, NR - R, BABYLON.Space.LOCAL);
+            carBody.translate(BABYLON.Axis.Z, R - NR, BABYLON.Space.LOCAL);
+            R = NR;
+
+        }
+
+        // if((map["a"] || map["A"]) && -Math.PI/6 < theta) {
+        //
+        //     deltaTheta = -Math.PI/252;
+        //     theta += deltaTheta;
+        //     pivotFI.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
+        //     pivotFO.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
+        //     if(Math.abs(theta) > 0.00000001) {
+        //         NR = A/2 +L/Math.tan(theta);
+        //     }
+        //     else {
+        //         theta = 0;
+        //         NR = 0;
+        //     }
+        //     pivot.translate(BABYLON.Axis.Z, NR - R, BABYLON.Space.LOCAL);
+        //     carBody.translate(BABYLON.Axis.Z, R - NR, BABYLON.Space.LOCAL);
+        //     R = NR;
+        // }
+        //
+        // if((map["d"] || map["D"])  && theta < Math.PI/6) {
+        //
+        //     deltaTheta = Math.PI/252;
+        //     theta += deltaTheta;
+        //     pivotFI.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
+        //     pivotFO.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
+        //     if(Math.abs(theta) > 0.00000001) {
+        //         NR = A/2 +L/Math.tan(theta);
+        //     }
+        //     else {
+        //         theta = 0;
+        //         NR = 0;
+        //     }
+        //     pivot.translate(BABYLON.Axis.Z, NR - R, BABYLON.Space.LOCAL);
+        //     carBody.translate(BABYLON.Axis.Z, R - NR, BABYLON.Space.LOCAL);
+        //     R = NR;
+        // }
 
         // if(D > 0) {
             phi = D/(R * F);
 
-            if(Math.abs(theta)>0) {
-
+            if(theta < 0) {
                 pivot.rotate(BABYLON.Axis.Y, phi, BABYLON.Space.WORLD);
                 psiRI = D/(r * F);
                 psiRO = D * (R + A)/(r * F);
@@ -270,8 +457,18 @@ var createScene = function() {
                 wheelFO.rotate(BABYLON.Axis.Y, psiFO, BABYLON.Space.LOCAL);
                 wheelRI.rotate(BABYLON.Axis.Y, psiRI, BABYLON.Space.LOCAL);
                 wheelRO.rotate(BABYLON.Axis.Y, psiRO, BABYLON.Space.LOCAL);
-            }
-            else {
+            }else if(theta > 0) {
+                pivot.rotate(BABYLON.Axis.Y, phi, BABYLON.Space.WORLD);
+                psiRI = D/(r * F);
+                psiRO = D * (R + A)/(r * F);
+                psiFI = D * Math.sqrt(R* R + L * L)/(r * F);
+                psiFO = D * Math.sqrt((R + A) * (R + A) + L * L)/(r * F);
+
+                wheelFI.rotate(BABYLON.Axis.Y, psiFO, BABYLON.Space.LOCAL);
+                wheelFO.rotate(BABYLON.Axis.Y, psiFI, BABYLON.Space.LOCAL);
+                wheelRI.rotate(BABYLON.Axis.Y, psiRO, BABYLON.Space.LOCAL);
+                wheelRO.rotate(BABYLON.Axis.Y, psiRI, BABYLON.Space.LOCAL);
+            } else {
 
                 pivot.translate(BABYLON.Axis.X, -distance, BABYLON.Space.LOCAL);
                 wheelFI.rotate(BABYLON.Axis.Y, psi, BABYLON.Space.LOCAL);
@@ -280,6 +477,7 @@ var createScene = function() {
                 wheelRO.rotate(BABYLON.Axis.Y, psi, BABYLON.Space.LOCAL);
             }
         // }
+        // console.log('Theta -> '+theta+'\nRightVector -> '+rightVector);
     });
 
     /****************************End Animation************************************************/
