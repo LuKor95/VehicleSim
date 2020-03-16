@@ -5,56 +5,35 @@ var engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
 
 var gamepadApi = {
     connected: false,
-    axes: [],
+    type: '',
+    platform: '',
     buttons: [],
+    axes: [],
+    gear: 0
 };
 
 var forwardVector;
 var rightVector;
+var gear;
 
-// function setGamepadApi(gamepad) {
-//     let gamepadId = detectUserGamepad(gamepad);
-//     let platform = detectUserPlatform();
+// window.addEventListener("gamepadconnected", function (e) {
+//     console.log("Connected");
+//     var gp = navigator.getGamepads()[e.gamepad.index];
+//     gamepadApi.connected = gp.connected;
+//     gamepadApi.axes = gp.axes;
+//     gamepadApi.buttons = gp.buttons;
 //
-//     if (gamepadId === 0 && platform === 0){
-//         // gamepadApi.axes[0] = gamepad.axes[0];
-//         // gamepadApi.axes[1] = gamepad.axes[1];
-//         // gamepadApi.axes[2] = gamepad.axes[5];
-//         // gamepadApi.axes[3] = gamepad.axes[6];
-//         //
-//         // gamepadApi.axes[4] = gamepad.axes[9];
-//     }else if ((gamepadId === 0 && platform === 1) || (gamepadId === 1 && platform === 1)){
-//         // gamepadApi.axes = gamepad.axes;
-//     }else if (gamepadId === 1 && platform === 0){
-//         // gamepadApi.axes[0] = gamepad.axes[0];
-//         // gamepadApi.axes[1] = gamepad.axes[1];
-//         // gamepadApi.axes[2] = gamepad.axes[2];
-//         // gamepadApi.axes[3] = gamepad.axes[5];
-//         //
-//         // gamepadApi.axes[4] = gamepad.axes[9];
-//     }else {
-//         console.log("Ziadna podpora OS alebo Gamepadu");
-//     }
-// }
-
-window.addEventListener("gamepadconnected", function (e) {
-    console.log("Connected");
-    var gp = navigator.getGamepads()[e.gamepad.index];
-    gamepadApi.connected = gp.connected;
-    gamepadApi.axes = gp.axes;
-    gamepadApi.buttons = gp.buttons;
-
-
-    console.log(gamepadApi);
-});
-window.addEventListener("gamepaddisconnected", function (e) {
-    console.log("Disconnected");
-    var gp = navigator.getGamepads()[e.gamepad.index];
-    gamepadApi.connected = false;
-    gamepadApi.axes = [];
-    gamepadApi.buttons = [];
-    console.log(gamepadApi);
-});
+//
+//     console.log(gamepadApi);
+// });
+// window.addEventListener("gamepaddisconnected", function (e) {
+//     console.log("Disconnected");
+//     var gp = navigator.getGamepads()[e.gamepad.index];
+//     gamepadApi.connected = false;
+//     gamepadApi.axes = [];
+//     gamepadApi.buttons = [];
+//     console.log(gamepadApi);
+// });
 
 /*****************************Detect Devices*********************************************/
 
@@ -234,65 +213,78 @@ var createScene = function() {
 
     /****************************Animation******************************************************/
     scene.registerBeforeRender(function () {
+        updateGamepad(navigator.getGamepads()[0], D);
+        if (gamepadApi.type === 'joystick'){
+            // rightVector = (gamepadApi.axes[0].toFixed(2)) * turnBorder;
+            // forwardVector = (gamepadApi.axes[1].toFixed(2)) * maxForwardSpeed;
+            // gear = gamepadApi.axes[2].toFixed(2);
+        }else if (gamepadApi.type === 'wheel'){
 
-        if(gamepadApi.connected){
-            var gp = navigator.getGamepads()[0];
-            gamepadApi.axes = gp.axes;
-            gamepadApi.buttons = gp.buttons;
-            // for (let i=0; i<gamepadApi.buttons.length; i++){
-            //     if (gamepadApi.buttons[i].pressed){
-            //         // if(i === 0){
-            //         //     sphere.position.x += 0.01;
-            //         // }
-            //         // if(i === 1){
-            //         //     sphere.position.x -= 0.01;
-            //         // }
-            //         console.log(i);
-            //     }
-            // }
+
+            // acceleratorPedal
+            // brakePedal
+            // clutchPedal
+
             rightVector = (gamepadApi.axes[0].toFixed(2)) * turnBorder;
-            forwardVector = (gamepadApi.axes[1].toFixed(2)) * maxForwardSpeed;
-
-            // console.log(rightVector);
-            // for (let i=0; i < gamepadApi.axes.length; i++){
-            //     axes0.text = gamepadApi.axes[0].toString();
-            //     axes1.text = gamepadApi.axes[1].toString();
-            //     axes5.text = gamepadApi.axes[5].toString();
-            //     axes6.text = gamepadApi.axes[6].toString();
-            //     axes9.text = gamepadApi.axes[9].toString();
-            //     // connectionText.text = gamepadApi.axes[1].toString();
-            //     // sphere.position.x = Number(Math.round(gamepadApi.axes[0]+'e2')+'e-2')/10;
-            //     // sphere.position.x = gamepadApi.axes[0]*10;
-            //     // sphere.position.y = gamepadApi.axes[1]*-10;
-            // }
-            // console.log(forwardVector);
+            forwardVector = ((gamepadApi.axes[1].toFixed(2)) * maxForwardSpeed);
+            // console.log(gamepadApi.axes[0].toFixed(2));
         }
+        // gamepadApi.axes = gp.axes;
+        // gamepadApi.buttons = gp.buttons;
+
+
+
+
     });
 
     scene.registerAfterRender(function() {
         F = engine.getFps();
 
-        /** Forward, Backward movement **/
+        /** Forward, Backward movement for wheel**/
         // console.log(forwardVector);
-        if(forwardVector < 0  && D >= 0 && D < Math.abs(forwardVector)){
-            D += 1;
-            console.log("Speed UP");
-        }
+        // if(forwardVector < 0  && D >= 0 && D < Math.abs(forwardVector)){
+        //     D += 1;
+        //     console.log("Speed UP");
+        // }
+        //
+        // if(forwardVector > 0  && D > 0 && D < Math.abs(forwardVector)){
+        //     D -= 0.5;
+        //     console.log("Speed BREAK");
+        // }
+        //
+        // if(forwardVector > 0  && D <= 0 && D > -Math.abs(forwardVector)){
+        //     D -= 1;
+        //     console.log("Speed BACKWARD");
+        // }
+        //
+        // if(forwardVector < 0  && D < 0 && D > -Math.abs(forwardVector)){
+        //     D += 0.5;
+        //     console.log("Speed BACKWARD BREAK");
+        // }
+        /** Forward, Backward movement for wheel**/
 
-        if(forwardVector > 0  && D > 0 && D < Math.abs(forwardVector)){
-            D -= 0.5;
-            console.log("Speed BREAK");
-        }
-
-        if(forwardVector > 0  && D <= 0 && D > -Math.abs(forwardVector)){
-            D -= 1;
-            console.log("Speed BACKWARD");
-        }
-
-        if(forwardVector < 0  && D < 0 && D > -Math.abs(forwardVector)){
-            D += 0.5;
-            console.log("Speed BACKWARD BREAK");
-        }
+        /** Forward, Backward movement for joystick**/
+        // console.log(forwardVector);
+        // if(forwardVector < 0  && D >= 0 && D < Math.abs(forwardVector)){
+        //     D += 1;
+        //     console.log("Speed UP");
+        // }
+        //
+        // if(forwardVector > 0  && D > 0 && D < Math.abs(forwardVector)){
+        //     D -= 0.5;
+        //     console.log("Speed BREAK");
+        // }
+        //
+        // if(forwardVector > 0  && D <= 0 && D > -Math.abs(forwardVector)){
+        //     D -= 1;
+        //     console.log("Speed BACKWARD");
+        // }
+        //
+        // if(forwardVector < 0  && D < 0 && D > -Math.abs(forwardVector)){
+        //     D += 0.5;
+        //     console.log("Speed BACKWARD BREAK");
+        // }
+        /** Forward, Backward movement for joystick**/
 
         // if((map["w"] || map["W"]) && D < maxForwardSpeed ) {
         //     D += 1;

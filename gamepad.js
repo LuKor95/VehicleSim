@@ -1,4 +1,16 @@
-/*********************************Support************************************************/
+const supportedPlatform = [
+    {
+        id: 0,
+        name: 'Win32',
+        type: 'windows'
+    },
+    {
+        id: 1,
+        name: 'Linux x86_64',
+        type: 'linux'
+    }
+];
+
 const supportedGamepad = [
     {
         id: 0,
@@ -8,102 +20,84 @@ const supportedGamepad = [
     {
         id: 1,
         name: 'G920 Driving Force',
-        type: 'racing-wheel'
+        type: 'wheel'
     }
 ];
 
-const supportedPlatform = [
-    {
-        id: 0,
-        name: 'Win32',
-        type: []
-    },
-    {
-        id: 1,
-        name: 'Linux x86_64',
-        type: []
-    }
-];
+const axesSync = {
+    joystick_windows: [0, 1, 6],
+    joystick_linux: [0, 1, 3],
+    wheel_windows: [0, 1, 2],
+    wheel_linux: [0, 1, 2]
+};
 
 function detectUserPlatform() {
     for (let i = 0; i < supportedPlatform.length; i++){
         if (window.navigator.platform === supportedPlatform[i].name){
-            return supportedPlatform[i].id;
+            return supportedPlatform[i].type;
         }
     }
     return null;
-
-    // let userPlatform = supportedPlatform.indexOf(window.navigator.platform);
-    // if (userPlatform !== -1){
-    //     return supportedPlatform[userPlatform];
-    // }
-    // return null;
 }
 
 function detectUserGamepad(gamepad) {
     for (let i = 0; i < supportedGamepad.length; i++){
         if (gamepad.id.includes(supportedGamepad[i].name)){
-            return supportedGamepad[i].id;
+            return supportedGamepad[i].type;
         }
     }
     return null;
 }
 
+function registerGamepad(gamepad) {
+    gamepadApi.connected = gamepad.connected;
+    gamepadApi.type = detectUserGamepad(gamepad);
+    gamepadApi.platform = detectUserPlatform();
+}
 
+function updateGamepad(gamepad, distance){
+    if (gamepadApi.connected && gamepadApi.type && gamepadApi.platform){
+        let axesGamepad = axesSync[gamepadApi.type+'_'+gamepadApi.platform];
+        gamepadApi.buttons = gamepad.buttons;
 
-/*****************************Detect Devices*********************************************/
+        if (gamepadApi.type === 'joystick'){
 
-var gamepadApi = {
-    connected: false,
-    axes: [],
-    buttons: [],
-};
+        }else if (gamepadApi.type === 'wheel'){
 
-var forwardVector;
-var rightVector;
+            gamepadApi.axes[0] = gamepad.axes[axesGamepad[0]];
+            gamepadApi.axes[1] = (1 - gamepad.axes[axesGamepad[1]]) / 2;
+            gamepadApi.axes[2] = (1 - gamepad.axes[axesGamepad[2]]) / 2;
 
-function setGamepadApi(gamepad) {
-    let gamepadId = detectUserGamepad(gamepad);
-    let platform = detectUserPlatform();
+            if (gamepadApi.buttons[4].pressed && gamepadApi.gear < 1 && distance === 0){
+                gamepadApi.gear += 1;
+            }
+            if (gamepadApi.buttons[5].pressed && gamepadApi.gear > -1  && distance === 0){
+                gamepadApi.gear -= 1;
+            }
 
-    if (gamepadId === 0 && platform === 0){
-        // gamepadApi.axes[0] = gamepad.axes[0];
-        // gamepadApi.axes[1] = gamepad.axes[1];
-        // gamepadApi.axes[2] = gamepad.axes[5];
-        // gamepadApi.axes[3] = gamepad.axes[6];
-        //
-        // gamepadApi.axes[4] = gamepad.axes[9];
-    }else if ((gamepadId === 0 && platform === 1) || (gamepadId === 1 && platform === 1)){
-        // gamepadApi.axes = gamepad.axes;
-    }else if (gamepadId === 1 && platform === 0){
-        // gamepadApi.axes[0] = gamepad.axes[0];
-        // gamepadApi.axes[1] = gamepad.axes[1];
-        // gamepadApi.axes[2] = gamepad.axes[2];
-        // gamepadApi.axes[3] = gamepad.axes[5];
-        //
-        // gamepadApi.axes[4] = gamepad.axes[9];
-    }else {
-        console.log("Ziadna podpora OS alebo Gamepadu");
+        }
     }
+}
+
+function resetGamepad(){
+    gamepadApi.connected = false;
+    gamepadApi.type = '';
+    gamepadApi.axes = [];
+    gamepadApi.buttons = [];
+
 }
 
 window.addEventListener("gamepadconnected", function (e) {
     console.log("Connected");
-    var gp = navigator.getGamepads()[e.gamepad.index];
-    gamepadApi.connected = gp.connected;
-    gamepadApi.axes = gp.axes;
-    gamepadApi.buttons = gp.buttons;
-
-
+    var gamepad = navigator.getGamepads()[e.gamepad.index];
+    registerGamepad(gamepad);
+    updateGamepad(gamepad);
     console.log(gamepadApi);
 });
+
 window.addEventListener("gamepaddisconnected", function (e) {
     console.log("Disconnected");
-    var gp = navigator.getGamepads()[e.gamepad.index];
-    gamepadApi.connected = false;
-    gamepadApi.axes = [];
-    gamepadApi.buttons = [];
-    console.log(gamepadApi);
+    resetGamepad();
 });
 
 /*****************************Detect Devices*********************************************/
