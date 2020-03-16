@@ -215,11 +215,12 @@ var createScene = function() {
     scene.registerBeforeRender(function () {
         updateGamepad(navigator.getGamepads()[0], D);
         if (gamepadApi.type === 'joystick'){
+            //TODO
             // rightVector = (gamepadApi.axes[0].toFixed(2)) * turnBorder;
             // forwardVector = (gamepadApi.axes[1].toFixed(2)) * maxForwardSpeed;
             // gear = gamepadApi.axes[2].toFixed(2);
         }else if (gamepadApi.type === 'wheel'){
-
+            //TODO
 
             // acceleratorPedal
             // brakePedal

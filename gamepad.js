@@ -61,7 +61,7 @@ function updateGamepad(gamepad, distance){
         gamepadApi.buttons = gamepad.buttons;
 
         if (gamepadApi.type === 'joystick'){
-
+            // TODO
         }else if (gamepadApi.type === 'wheel'){
 
             gamepadApi.axes[0] = gamepad.axes[axesGamepad[0]];
