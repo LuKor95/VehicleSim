@@ -56,23 +56,39 @@ function registerGamepad(gamepad) {
 }
 
 function updateGamepad(gamepad, distance){
-    if (gamepadApi.connected && gamepadApi.type && gamepadApi.platform){
+    if (gamepad && gamepadApi.connected && gamepadApi.type && gamepadApi.platform){
         let axesGamepad = axesSync[gamepadApi.type+'_'+gamepadApi.platform];
         gamepadApi.buttons = gamepad.buttons;
 
         if (gamepadApi.type === 'joystick'){
-            // TODO
+            gamepadApi.axes[0] = gamepad.axes[axesGamepad[0]].toFixed(2);
+
+            if (gamepad.axes[axesGamepad[1]].toFixed(2) < 0){
+                gamepadApi.axes[1] = Math.abs(gamepad.axes[axesGamepad[1]]);
+                gamepadApi.axes[2] = 0;
+            }else if (gamepad.axes[axesGamepad[1]].toFixed(2) > 0){
+                gamepadApi.axes[1] = 0;
+                gamepadApi.axes[2] = Math.abs(gamepad.axes[axesGamepad[1]]);
+            }else {
+                gamepadApi.axes[1] = 0;
+                gamepadApi.axes[2] = 0;
+            }
+            if (gamepad.axes[axesGamepad[2]].toFixed(2) <= 0 && distance === 0){
+                gamepadApi.gear = 1;
+            }else if (gamepad.axes[axesGamepad[2]].toFixed(2) > 0 && distance === 0){
+                gamepadApi.gear = -1;
+            }
         }else if (gamepadApi.type === 'wheel'){
 
             gamepadApi.axes[0] = gamepad.axes[axesGamepad[0]];
             gamepadApi.axes[1] = (1 - gamepad.axes[axesGamepad[1]]) / 2;
             gamepadApi.axes[2] = (1 - gamepad.axes[axesGamepad[2]]) / 2;
 
-            if (gamepadApi.buttons[4].pressed && gamepadApi.gear < 1 && distance === 0){
-                gamepadApi.gear += 1;
+            if (gamepadApi.buttons[4].pressed && gamepadApi.gear !== 1 && distance === 0){
+                gamepadApi.gear = 1;
             }
-            if (gamepadApi.buttons[5].pressed && gamepadApi.gear > -1  && distance === 0){
-                gamepadApi.gear -= 1;
+            if (gamepadApi.buttons[5].pressed && gamepadApi.gear !== -1  && distance === 0){
+                gamepadApi.gear = -1;
             }
 
         }
