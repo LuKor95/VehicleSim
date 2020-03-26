@@ -43,11 +43,18 @@ var createScene = function() {
     var scene = new BABYLON.Scene(engine);
     var meshes = {};
     var isVehicleReady = false;
+    var switchCam = true;
 
     // camera
-    var camera = new BABYLON.ArcRotateCamera("camera1",  0, 0, 20, new BABYLON.Vector3(0, 0, 0), scene);
-    camera.setPosition(new BABYLON.Vector3(11.5, 3.5, 0));
+    var camera = new BABYLON.ArcRotateCamera("camera1",  0, 0, 10, new BABYLON.Vector3(-2.5, 0, 0), scene);
+    camera.setPosition(new BABYLON.Vector3(11.5, 2.5, 0));
     camera.attachControl(canvas, true);
+
+    var camera2 = new BABYLON.UniversalCamera("camera2", new BABYLON.Vector3(-4, 3.2, -1.3), scene);
+    camera2.setTarget(new BABYLON.Vector3(-5, 3.2, -1.3));
+
+    // camera.attachControl(canvas, true);
+    scene.activeCamera = camera;
 
     // lights
     var light1 = new BABYLON.DirectionalLight("light1", new BABYLON.Vector3(1, 2, 0), scene);
@@ -97,13 +104,32 @@ var createScene = function() {
         // var extrudePath = [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, 0, 4)];
         //
         // //Create body and apply material
-        // var carBody = BABYLON.MeshBuilder.ExtrudeShape("body", {shape: side, path: extrudePath, cap : BABYLON.Mesh.CAP_ALL}, scene);
-        // carBody.material = bodyMaterial;
+        // var carBodya = BABYLON.MeshBuilder.ExtrudeShape("body", {shape: side, path: extrudePath, cap : BABYLON.Mesh.CAP_ALL}, scene);
+        // carBodya.material = bodyMaterial;
         // camera.parent = carBody;
 
         var carBody = meshes["car"];
+        // carBody.scaling = new BABYLON.Vector3(5, 5, 5);
+
         camera.parent = carBody;
+        camera2.parent = carBody;
+        // camera2.parent = carBody;
         /*-----------------------End Car Body------------------------------------------*/
+
+        /*-----------------------Steering Wheel--------------------------------------*/
+
+        var pivotSW = new BABYLON.Mesh("pivotSW", scene);
+        pivotSW.parent = carBody;
+        pivotSW.rotate(BABYLON.Axis.Z, Math.PI / 12, BABYLON.Space.LOCAL);
+        pivotSW.position = new BABYLON.Vector3(-6, 2.3, -1.5);
+
+
+        var steering_wheel = meshes["steering_wheel"];
+        // steering_wheel.rotate(BABYLON.Axis.Z, -Math.PI/sss, BABYLON.Space.WORLD);
+        steering_wheel.parent = pivotSW;
+        // steering_wheel.position = new BABYLON.Vector3(-5, 2.5, -1);
+
+        /*-----------------------End Steering Wheel--------------------------------------*/
 
         /*-----------------------Wheel------------------------------------------*/
 
@@ -125,34 +151,36 @@ var createScene = function() {
         // var wheelFI = BABYLON.MeshBuilder.CreateCylinder("wheelFI", {diameter: 3, height: 1, tessellation: 24, faceColors:faceColors, faceUV:faceUV}, scene);
         // wheelFI.material = wheelMaterial;
 
-        var wheelFI = meshes["pneu"];
+        var wheelFI = meshes["pneu_left"];
+        var wheelFO = meshes["pneu_right"];
 
         //rotate wheel so tread in xz plane
         wheelFI.rotate(BABYLON.Axis.X, Math.PI / 2, BABYLON.Space.WORLD);
+        wheelFO.rotate(BABYLON.Axis.X, Math.PI / 2, BABYLON.Space.WORLD);
         /*-----------------------End Wheel------------------------------------------*/
 
         /*-------------------Pivots for Front Wheels-----------------------------------*/
         var pivotFI = new BABYLON.Mesh("pivotFI", scene);
         pivotFI.parent = carBody;
-        pivotFI.position = new BABYLON.Vector3(-3.12, 0, -1);
+        pivotFI.position = new BABYLON.Vector3(-9.4, 0, -2.8);
 
         var pivotFO = new BABYLON.Mesh("pivotFO", scene);
         pivotFO.parent = carBody;
-        pivotFO.position = new BABYLON.Vector3(-3.12, 0, 1);
+        pivotFO.position = new BABYLON.Vector3(-9.4, 0, 2.8);
         /*----------------End Pivots for Front Wheels--------------------------------*/
 
         /*------------Create other Wheels as Instances, Parent and Position----------*/
-        var wheelFO = wheelFI.createInstance("FO");
+        // var wheelFO = wheelFI.createInstance("FO");
         wheelFO.parent = pivotFO;
         wheelFO.position = new BABYLON.Vector3(0, 0, 0);
 
         var wheelRI = wheelFI.createInstance("RI");
         wheelRI.parent = carBody;
-        wheelRI.position = new BABYLON.Vector3(0, 0, -1);
+        wheelRI.position = new BABYLON.Vector3(0, 0, -2.8);
 
-        var wheelRO = wheelFI.createInstance("RO");
+        var wheelRO = wheelFO.createInstance("RO");
         wheelRO.parent = carBody;
-        wheelRO.position = new BABYLON.Vector3(0, 0, 1);
+        wheelRO.position = new BABYLON.Vector3(0, 0, 2.8);
 
         wheelFI.parent = pivotFI;
         wheelFI.position = new BABYLON.Vector3(0, 0, 0);
@@ -221,6 +249,7 @@ var createScene = function() {
 
         var theta = 0;
         var deltaTheta = 0;
+        var sw = Math.PI/19;
         var D = 0; //distance translated per second
         var R = 50; //turning radius, initial set at pivot z value
         var NR; //Next turning radius on wheel turn
@@ -290,13 +319,17 @@ var createScene = function() {
                 console.log("BRAKE");
             }
 
-            if ((map["w"] || map["W"]) && D < maxForwardSpeed) {
-                D += 1;
+            if (map["v"] || map["V"]) {
+                    scene.activeCamera = camera2;
             }
 
-            if ((map["s"] || map["S"]) && D > -maxForwardSpeed) {
-                D -= 1;
-            }
+            // if ((map["w"] || map["W"]) && D < maxForwardSpeed) {
+            //     D += 1;
+            // }
+            //
+            // if ((map["s"] || map["S"]) && D > -maxForwardSpeed) {
+            //     D -= 1;
+            // }
 
             if (!(map["w"] || map["W"]) && !(map["s"] || map["S"]) && D !== 0 && forwardVector === 0) {
                 if (D > 0.05)
@@ -337,6 +370,7 @@ var createScene = function() {
                 theta += deltaTheta;
                 pivotFI.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
                 pivotFO.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
+                pivotSW.rotate(BABYLON.Axis.X, deltaTheta - sw, BABYLON.Space.LOCAL);
                 if (Math.abs(theta) > 0.00000001) {
                     NR = A / 2 + L / Math.tan(theta);
                 } else {
@@ -355,6 +389,7 @@ var createScene = function() {
                 theta += deltaTheta;
                 pivotFI.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
                 pivotFO.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
+                pivotSW.rotate(BABYLON.Axis.X, deltaTheta + sw, BABYLON.Space.LOCAL);
                 if (Math.abs(theta) > 0.00000001) {
                     NR = A / 2 + L / Math.tan(theta);
                 } else {
@@ -373,6 +408,7 @@ var createScene = function() {
                 theta += deltaTheta;
                 pivotFI.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
                 pivotFO.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
+                pivotSW.rotate(BABYLON.Axis.X, deltaTheta + sw, BABYLON.Space.LOCAL);
                 if (Math.abs(theta) > 0.00000001) {
                     NR = A / 2 + L / Math.tan(theta);
                 } else {
@@ -391,6 +427,7 @@ var createScene = function() {
                 theta += deltaTheta;
                 pivotFI.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
                 pivotFO.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
+                pivotSW.rotate(BABYLON.Axis.X, deltaTheta - sw, BABYLON.Space.LOCAL);
                 if (Math.abs(theta) > 0.00000001) {
                     NR = A / 2 + L / Math.tan(theta);
                 } else {
