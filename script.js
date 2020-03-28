@@ -48,6 +48,9 @@ var createScene = function() {
     // camera
     var camera = new BABYLON.ArcRotateCamera("camera1",  0, 0, 10, new BABYLON.Vector3(-2.5, 0, 0), scene);
     camera.setPosition(new BABYLON.Vector3(11.5, 2.5, 0));
+    camera.upperBetaLimit = (Math.PI / 2);
+    camera.lowerRadiusLimit = 10;
+    camera.upperRadiusLimit = 100;
     camera.attachControl(canvas, true);
 
     var camera2 = new BABYLON.UniversalCamera("camera2", new BABYLON.Vector3(-4, 3.2, -1.3), scene);
@@ -60,6 +63,17 @@ var createScene = function() {
     var light1 = new BABYLON.DirectionalLight("light1", new BABYLON.Vector3(1, 2, 0), scene);
     var light2 = new BABYLON.HemisphericLight("light2", new BABYLON.Vector3(0, 1, 0), scene);
     light2.intensity = 0.75;
+
+    //skybox
+    var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size:10000.0}, scene);
+    var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+    skyboxMaterial.backFaceCulling = false;
+    skyboxMaterial.disableLighting = true;
+    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/skybox/bluecloud", scene);
+    skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+    skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+    skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+    skybox.material = skyboxMaterial;
 
     var assetsManager = new BABYLON.AssetsManager(scene);
     var meshTask = assetsManager.addMeshTask("", "", "meshes/car/", "dong-feng.babylon");
@@ -200,31 +214,37 @@ var createScene = function() {
 
         /*****************************Add Ground********************************************/
         var groundSize = 400;
+        // var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: groundSize*3, height: groundSize}, scene);
+        // var groundMaterial = new BABYLON.StandardMaterial("ground", scene);
+        // groundMaterial.diffuseTexture = new BABYLON.Texture("textures/road/road_texture2.jpg", scene);
+        // ground.material = groundMaterial;
+        // ground.position = new BABYLON.Vector3(0, -1.5, 0);
 
-        var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: groundSize, height: groundSize}, scene);
-        var groundMaterial = new BABYLON.StandardMaterial("ground", scene);
-        groundMaterial.diffuseColor = new BABYLON.Color3(0.75, 1, 0.25);
-        ground.material = groundMaterial;
-        ground.position.y = -1.5;
+
+        var groundEnviroment = BABYLON.MeshBuilder.CreateGround("ground", {width: groundSize*3, height: groundSize}, scene);
+        var groundEnviromentMaterial = new BABYLON.StandardMaterial("ground", scene);
+        groundEnviromentMaterial.diffuseColor = new BABYLON.Color3(0.826, 0.706, 0.549);
+        groundEnviroment.material = groundEnviromentMaterial;
+        groundEnviroment.position = new BABYLON.Vector3(0, -1.5, 0);
         /*****************************End Add Ground********************************************/
 
         /*****************************Particles to Show Movement********************************************/
-        var box = BABYLON.MeshBuilder.CreateBox("box", {}, scene);
-        box.position = new BABYLON.Vector3(20, 0, 10);
-
-
-        var boxesSPS = new BABYLON.SolidParticleSystem("boxes", scene, {updatable: false});
-
-        //function to position of grey boxes
-        var set_boxes = function (particle, i, s) {
-            particle.position = new BABYLON.Vector3(-200 + Math.random() * 400, 0, -200 + Math.random() * 400);
-        };
-
-        //add 400 boxes
-        boxesSPS.addShape(box, 400, {positionFunction: set_boxes});
-        var boxes = boxesSPS.buildMesh(); // mesh of boxes
-        boxes.material = new BABYLON.StandardMaterial("", scene);
-        boxes.material.alpha = 0.25;
+        // var box = BABYLON.MeshBuilder.CreateBox("box", {}, scene);
+        // box.position = new BABYLON.Vector3(20, 0, 10);
+        //
+        //
+        // var boxesSPS = new BABYLON.SolidParticleSystem("boxes", scene, {updatable: false});
+        //
+        // //function to position of grey boxes
+        // var set_boxes = function (particle, i, s) {
+        //     particle.position = new BABYLON.Vector3(-200 + Math.random() * 400, 0, -200 + Math.random() * 400);
+        // };
+        //
+        // //add 400 boxes
+        // boxesSPS.addShape(box, 400, {positionFunction: set_boxes});
+        // var boxes = boxesSPS.buildMesh(); // mesh of boxes
+        // boxes.material = new BABYLON.StandardMaterial("", scene);
+        // boxes.material.alpha = 0.25;
         /*****************************Particles to Show Movement********************************************/
 
 
@@ -235,7 +255,12 @@ var createScene = function() {
 
         scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, function (evt) {
             map[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
-
+            if ((map["v"] || map["V"]) && switchCam) {
+                scene.activeCamera = camera2;
+            }else{
+                scene.activeCamera = camera;
+            }
+            switchCam = !switchCam;
         }));
 
         scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt) {
@@ -317,10 +342,6 @@ var createScene = function() {
                     D += brake;
                 }
                 console.log("BRAKE");
-            }
-
-            if (map["v"] || map["V"]) {
-                    scene.activeCamera = camera2;
             }
 
             // if ((map["w"] || map["W"]) && D < maxForwardSpeed) {

@@ -12,20 +12,20 @@ Exporter version: 6.3.1, Blender version: 2.82 (sub 7)
 		Texture directory   :  C:\Users\Lukas\PhpstormProjects\CarSim\meshes\car\
 	Python World class constructor completed
 	WARNING: No active camera has been assigned, or is not in a currently selected Blender layer
-	processing begun of mesh:  pneu
+	processing begun of mesh:  pneu_right
 		processing begun of material:  Material.024
 		processing begun of material:  Material.022
 		processing begun of material:  Material.004
 		processing begun of multimaterial:  dong_feng.Multimaterial#0
 		Custom split normals with tangents being used
-		num positions      :  66351
-		num normals        :  66351
-		num tangents       :  265404
-		num uvs            :  132702
+		num positions      :  66355
+		num normals        :  66355
+		num tangents       :  265420
+		num uvs            :  132710
 		num uvs2           :  0
 		num colors         :  0
 		num indices        :  304584
-		WARNING: # of 0 area faces found:  1456
+		WARNING: # of 0 area faces found:  221
 	processing begun of mesh:  steering_wheel
 		processing begun of material:  Material.001
 		Custom split normals with tangents being used
@@ -62,18 +62,33 @@ Exporter version: 6.3.1, Blender version: 2.82 (sub 7)
 		registered as also a user of material:  Material.001
 		processing begun of multimaterial:  dong_feng.Multimaterial#1
 		Custom split normals with tangents being used
-		num positions      :  150863
-		num normals        :  150863
-		num tangents       :  603452
-		num uvs            :  301726
+		num positions      :  150866
+		num normals        :  150866
+		num tangents       :  603464
+		num uvs            :  301732
 		num uvs2           :  0
 		num colors         :  0
 		num indices        :  424407
-		WARNING: # of 0 area faces found:  397
+		WARNING: # of 0 area faces found:  186
+	processing begun of mesh:  pneu_left
+		processing begun of material:  Material.005
+		processing begun of material:  Material.010
+		processing begun of material:  Material.017
+		processing begun of multimaterial:  dong_feng.Multimaterial#2
+		Custom split normals with tangents being used
+		num positions      :  66355
+		num normals        :  66355
+		num tangents       :  265420
+		num uvs            :  132710
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  304584
+		WARNING: # of 0 area faces found:  221
 ========= Writing of JSON file started =========
-	writing mesh:  pneu
+	writing mesh:  pneu_right
 	writing mesh:  steering_wheel
 	writing mesh:  car
+	writing mesh:  pneu_left
 ========= Writing of JSON file completed =========
 ========= end of processing =========
-elapsed time:  0 min, 19.7698 secs
+elapsed time:  0 min, 40.9114 secs
