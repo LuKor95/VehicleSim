@@ -17,32 +17,16 @@ var rightVector;
 var brake;
 var gear;
 
-// window.addEventListener("gamepadconnected", function (e) {
-//     console.log("Connected");
-//     var gp = navigator.getGamepads()[e.gamepad.index];
-//     gamepadApi.connected = gp.connected;
-//     gamepadApi.axes = gp.axes;
-//     gamepadApi.buttons = gp.buttons;
-//
-//
-//     console.log(gamepadApi);
-// });
-// window.addEventListener("gamepaddisconnected", function (e) {
-//     console.log("Disconnected");
-//     var gp = navigator.getGamepads()[e.gamepad.index];
-//     gamepadApi.connected = false;
-//     gamepadApi.axes = [];
-//     gamepadApi.buttons = [];
-//     console.log(gamepadApi);
-// });
-
-/*****************************Detect Devices*********************************************/
 
 /******* Add the create scene function ******/
 var createScene = function() {
     var scene = new BABYLON.Scene(engine);
+
     var meshes = {};
+    var listOfMeshes = [];
+
     var isVehicleReady = false;
+    var isRoadReady = false;
     var switchCam = true;
 
     // camera
@@ -64,7 +48,7 @@ var createScene = function() {
     var light2 = new BABYLON.HemisphericLight("light2", new BABYLON.Vector3(0, 1, 0), scene);
     light2.intensity = 0.75;
 
-    //skybox
+    // skybox
     var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size:10000.0}, scene);
     var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
     skyboxMaterial.backFaceCulling = false;
@@ -75,14 +59,24 @@ var createScene = function() {
     skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
     skybox.material = skyboxMaterial;
 
+    // loading assets
     var assetsManager = new BABYLON.AssetsManager(scene);
     var meshTask = assetsManager.addMeshTask("", "", "meshes/car/", "dong-feng.babylon");
+    var roadTask = assetsManager.addMeshTask("", "", "meshes/road/", "road.babylon");
 
     meshTask.onSuccess = function (task) {
         task.loadedMeshes.forEach(function (mesh) {
             meshes[mesh.id] = mesh;
         });
         isVehicleReady = true;
+        isAllMeshReady();
+    };
+
+    roadTask.onSuccess = function (task) {
+        task.loadedMeshes.forEach(function (mesh) {
+            meshes[mesh.id] = mesh;
+        });
+        isRoadReady = true;
         isAllMeshReady();
     };
 
@@ -99,35 +93,11 @@ var createScene = function() {
         /***************************Car*********************************************/
 
         /*-----------------------Car Body------------------------------------------*/
-
-        // //Car Body Material
-        // var bodyMaterial = new BABYLON.StandardMaterial("body_mat", scene);
-        // bodyMaterial.diffuseColor = new BABYLON.Color3(1.0, 0.25, 0.25);
-        // bodyMaterial.backFaceCulling = false;
-        //
-        // //Array of points for trapezium side of car.
-        // var side = [new BABYLON.Vector3(-6.5, 1.5, -2),
-        //     new BABYLON.Vector3(2.5, 1.5, -2),
-        //     new BABYLON.Vector3(3.5, 0.5, -2),
-        //     new BABYLON.Vector3(-9.5, 0.5, -2)
-        // ];
-        //
-        // side.push(side[0]);	//close trapezium
-        //
-        // //Array of points for the extrusion path
-        // var extrudePath = [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, 0, 4)];
-        //
-        // //Create body and apply material
-        // var carBodya = BABYLON.MeshBuilder.ExtrudeShape("body", {shape: side, path: extrudePath, cap : BABYLON.Mesh.CAP_ALL}, scene);
-        // carBodya.material = bodyMaterial;
-        // camera.parent = carBody;
-
         var carBody = meshes["car"];
-        // carBody.scaling = new BABYLON.Vector3(5, 5, 5);
 
         camera.parent = carBody;
         camera2.parent = carBody;
-        // camera2.parent = carBody;
+
         /*-----------------------End Car Body------------------------------------------*/
 
         /*-----------------------Steering Wheel--------------------------------------*/
@@ -137,33 +107,12 @@ var createScene = function() {
         pivotSW.rotate(BABYLON.Axis.Z, Math.PI / 12, BABYLON.Space.LOCAL);
         pivotSW.position = new BABYLON.Vector3(-6, 2.3, -1.5);
 
-
         var steering_wheel = meshes["steering_wheel"];
-        // steering_wheel.rotate(BABYLON.Axis.Z, -Math.PI/sss, BABYLON.Space.WORLD);
         steering_wheel.parent = pivotSW;
-        // steering_wheel.position = new BABYLON.Vector3(-5, 2.5, -1);
 
         /*-----------------------End Steering Wheel--------------------------------------*/
 
         /*-----------------------Wheel------------------------------------------*/
-
-        // //Wheel Material
-        // var wheelMaterial = new BABYLON.StandardMaterial("wheel_mat", scene);
-        // var wheelTexture = new BABYLON.Texture("http://i.imgur.com/ZUWbT6L.png", scene);
-        // wheelMaterial.diffuseTexture = wheelTexture;
-        //
-        // //Set color for wheel tread as black
-        // var faceColors=[];
-        // faceColors[1] = new BABYLON.Color3(0,0,0);
-        //
-        // //set texture for flat face of wheel
-        // var faceUV =[];
-        // faceUV[0] = new BABYLON.Vector4(0,0,1,1);
-        // faceUV[2] = new BABYLON.Vector4(0,0,1,1);
-        //
-        // //create wheel front inside and apply material
-        // var wheelFI = BABYLON.MeshBuilder.CreateCylinder("wheelFI", {diameter: 3, height: 1, tessellation: 24, faceColors:faceColors, faceUV:faceUV}, scene);
-        // wheelFI.material = wheelMaterial;
 
         var wheelFI = meshes["pneu_left"];
         var wheelFO = meshes["pneu_right"];
@@ -201,8 +150,8 @@ var createScene = function() {
         /*------------End Create other Wheels as Instances, Parent and Position----------*/
 
         /*---------------------Create Car Centre of Rotation-----------------------------*/
-        pivot = new BABYLON.Mesh("pivot", scene); //current centre of rotation
-        pivot.position.z = 50;
+        var pivot = new BABYLON.Mesh("pivot", scene); //current centre of rotation
+        pivot.position.z = 350;
         carBody.parent = pivot;
         carBody.position = new BABYLON.Vector3(0, 0, -50);
 
@@ -213,20 +162,58 @@ var createScene = function() {
 
 
         /*****************************Add Ground********************************************/
-        var groundSize = 400;
-        // var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: groundSize*3, height: groundSize}, scene);
-        // var groundMaterial = new BABYLON.StandardMaterial("ground", scene);
-        // groundMaterial.diffuseTexture = new BABYLON.Texture("textures/road/road_texture2.jpg", scene);
-        // ground.material = groundMaterial;
-        // ground.position = new BABYLON.Vector3(0, -1.5, 0);
 
+        var groundSizeWidth = 3000;
+        var groundSizeHeight = 1000;
 
-        var groundEnviroment = BABYLON.MeshBuilder.CreateGround("ground", {width: groundSize*3, height: groundSize}, scene);
-        var groundEnviromentMaterial = new BABYLON.StandardMaterial("ground", scene);
-        groundEnviromentMaterial.diffuseColor = new BABYLON.Color3(0.826, 0.706, 0.549);
-        groundEnviroment.material = groundEnviromentMaterial;
-        groundEnviroment.position = new BABYLON.Vector3(0, -1.5, 0);
+        var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: groundSizeWidth, height: groundSizeHeight}, scene);
+        var groundMaterial = new BABYLON.StandardMaterial("ground", scene);
+        groundMaterial.diffuseColor = new BABYLON.Color3(0.826, 0.706, 0.549);
+        ground.material = groundMaterial;
+        ground.position = new BABYLON.Vector3(0, -1.4, 0);
+
         /*****************************End Add Ground********************************************/
+
+        /*****************************Path Road********************************************/
+
+        var points = [];
+        var n = 50; // number of points - more points the slower the car
+        var ra = 300; //radius
+        var offsetX = 1000;
+
+        points.push(new BABYLON.Vector3(0, 0.2, ra));
+        for (let i = 0; i < n + 1; i++) {
+            points.push(new BABYLON.Vector3((ra * Math.sin(Math.PI * (1 / n) * i) + offsetX), 0.2, ra * Math.cos(Math.PI * (1 / n) * i)));
+        }
+        // points.push(new BABYLON.Vector3(points[points.length-1]-offsetX, 0, -r));
+        for (let i = 0; i < n + 1; i++) {
+            points.push(new BABYLON.Vector3((ra * -Math.sin(Math.PI * (1 / n) * i) - offsetX), 0.2, ra * -Math.cos(Math.PI * (1 / n) * i)));
+        }
+        points.push(new BABYLON.Vector3(0, 0.2, ra));
+
+        var track = BABYLON.MeshBuilder.CreateLines('track', {points: points}, scene);
+        track.color = new BABYLON.Color3(1, 0, 0);
+
+        /*****************************End Path Road********************************************/
+
+        /*****************************Road********************************************/
+
+        var straightRoadRight = meshes["straight_road"];
+        var straightRoadLeft = straightRoadRight.createInstance();
+
+        straightRoadRight.position = new BABYLON.Vector3(0, -1.3, 285);
+        straightRoadLeft.position = new BABYLON.Vector3(0, -1.3, -285);
+        // straightRoadRight.scaling.z = 0.8;
+
+        var roundRoadUp = meshes["round_road"];
+        var roundRoadDown = roundRoadUp.createInstance();
+
+        roundRoadUp.position = new BABYLON.Vector3(-1285, -1.3, 0);
+        roundRoadDown.rotation.y = Math.PI;
+        roundRoadDown.position = new BABYLON.Vector3(1285, -1.3, 0);
+
+
+        /*****************************End Road********************************************/
 
         /*****************************Particles to Show Movement********************************************/
         // var box = BABYLON.MeshBuilder.CreateBox("box", {}, scene);
