@@ -1,0 +1,43 @@
+Exporter version: 6.3.1, Blender version: 2.82 (sub 7)
+========= Conversion from Blender to Babylon.js =========
+	Scene settings used :
+		Inline textures     :  false
+		Material Type       :  PBR
+		Positions Precision :  4
+		Normals Precision   :  3
+		UVs Precision       :  3
+		Vert Color Precision:  3
+		Mat Weight Precision:  2
+		Keep Z-up r-handed  :  no
+		Texture directory   :  C:\Users\Lukas\PhpstormProjects\steeringwheel\road\
+	Python World class constructor completed
+	WARNING: No active camera has been assigned, or is not in a currently selected Blender layer
+	processing begun of mesh:  straight_road
+		processing begun of material:  straight_road
+			processing texture road_texture
+				texture type:  diffuseTexture, mapped using: "UVMap"
+		num positions      :  4
+		num normals        :  4
+		num tangents       :  0
+		num uvs            :  8
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  6
+	processing begun of mesh:  round_road
+		processing begun of material:  round_road
+			processing texture road_texture
+				texture type:  diffuseTexture, mapped using: "UVMap"
+		num positions      :  46
+		num normals        :  46
+		num tangents       :  0
+		num uvs            :  92
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  132
+	processing begun of node:  Empty
+========= Writing of JSON file started =========
+	writing mesh:  straight_road
+	writing mesh:  round_road
+========= Writing of JSON file completed =========
+========= end of processing =========
+elapsed time:  0 min, 0.0329 secs
