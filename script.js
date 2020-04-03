@@ -23,24 +23,23 @@ var createScene = function() {
     var scene = new BABYLON.Scene(engine);
 
     var meshes = {};
-    var listOfMeshes = [];
 
     var isVehicleReady = false;
     var isRoadReady = false;
+    var isBotReady = false;
     var switchCam = true;
 
-    // camera
-    var camera = new BABYLON.ArcRotateCamera("camera1",  0, 0, 10, new BABYLON.Vector3(-2.5, 0, 0), scene);
-    camera.setPosition(new BABYLON.Vector3(11.5, 2.5, 0));
+    // cameras
+    var camera = new BABYLON.ArcRotateCamera("camera1", 0, 0, 20, new BABYLON.Vector3(-2.5, 0, 0), scene);
+    camera.setPosition(new BABYLON.Vector3(18.5, 5.5, 0));
     camera.upperBetaLimit = (Math.PI / 2);
-    camera.lowerRadiusLimit = 10;
-    camera.upperRadiusLimit = 100;
+    camera.lowerBetaLimit = (Math.PI / 4);
+    camera.lowerRadiusLimit = 15;
+    camera.upperRadiusLimit = 60;
     camera.attachControl(canvas, true);
 
     var camera2 = new BABYLON.UniversalCamera("camera2", new BABYLON.Vector3(-4, 3.2, -1.3), scene);
     camera2.setTarget(new BABYLON.Vector3(-5, 3.2, -1.3));
-
-    // camera.attachControl(canvas, true);
     scene.activeCamera = camera;
 
     // lights
@@ -49,7 +48,7 @@ var createScene = function() {
     light2.intensity = 0.75;
 
     // skybox
-    var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size:10000.0}, scene);
+    var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size: 5000.0}, scene);
     var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
     skyboxMaterial.backFaceCulling = false;
     skyboxMaterial.disableLighting = true;
@@ -61,16 +60,9 @@ var createScene = function() {
 
     // loading assets
     var assetsManager = new BABYLON.AssetsManager(scene);
-    var meshTask = assetsManager.addMeshTask("", "", "meshes/car/", "dong-feng.babylon");
     var roadTask = assetsManager.addMeshTask("", "", "meshes/road/", "road.babylon");
-
-    meshTask.onSuccess = function (task) {
-        task.loadedMeshes.forEach(function (mesh) {
-            meshes[mesh.id] = mesh;
-        });
-        isVehicleReady = true;
-        isAllMeshReady();
-    };
+    var botTask = assetsManager.addMeshTask("", "", "meshes/bus/", "bus.babylon");
+    var meshTask = assetsManager.addMeshTask("", "", "meshes/car/", "dong-feng.babylon");
 
     roadTask.onSuccess = function (task) {
         task.loadedMeshes.forEach(function (mesh) {
@@ -80,16 +72,281 @@ var createScene = function() {
         isAllMeshReady();
     };
 
+    botTask.onSuccess = function (task) {
+        task.loadedMeshes.forEach(function (mesh) {
+            meshes[mesh.id] = mesh;
+        });
+        isBotReady = true;
+        isAllMeshReady();
+    };
+
+    meshTask.onSuccess = function (task) {
+        task.loadedMeshes.forEach(function (mesh) {
+            meshes[mesh.id] = mesh;
+        });
+        isVehicleReady = true;
+        isAllMeshReady();
+    };
+
     assetsManager.load();
 
+
     function isAllMeshReady(){
-        if (isVehicleReady){
-            createVehicle();
+        if (isRoadReady && isBotReady && isVehicleReady){
+            renderScene();
         }
     }
 
+    function renderScene() {
 
-    function createVehicle() {
+        /*****************************Ground********************************************/
+
+        var groundSizeWidth = 3000;
+        var groundSizeHeight = 1000;
+
+        var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: groundSizeWidth, height: groundSizeHeight}, scene);
+        var groundMaterial = new BABYLON.StandardMaterial("ground", scene);
+        groundMaterial.diffuseColor = new BABYLON.Color3(0.698, 0.624, 0.529);
+        ground.material = groundMaterial;
+        ground.position = new BABYLON.Vector3(0, -1.4, 0);
+
+        /*****************************Add Ground********************************************/
+
+        /*****************************Path Road********************************************/
+
+        // var points = [];
+        // var n = 50; // number of points - more points the slower the car
+        // var ra = 300; //radius
+        // var offsetX = 1000;
+        //
+        // points.push(new BABYLON.Vector3(0, 0.2, ra));
+        // for (let i = 0; i < n + 1; i++) {
+        //     points.push(new BABYLON.Vector3((ra * Math.sin(Math.PI * (1 / n) * i) + offsetX), 0.2, ra * Math.cos(Math.PI * (1 / n) * i)));
+        // }
+        // // points.push(new BABYLON.Vector3(points[points.length-1]-offsetX, 0, -r));
+        // for (let i = 0; i < n + 1; i++) {
+        //     points.push(new BABYLON.Vector3((ra * -Math.sin(Math.PI * (1 / n) * i) - offsetX), 0.2, ra * -Math.cos(Math.PI * (1 / n) * i)));
+        // }
+        // points.push(new BABYLON.Vector3(0, 0.2, ra));
+        //
+        // var track = BABYLON.MeshBuilder.CreateLines('track', {points: points}, scene);
+        // track.color = new BABYLON.Color3(1, 0, 0);
+
+        /*****************************End Path Road********************************************/
+
+        /*****************************Landscape********************************************/
+
+        var planeMaterial = new BABYLON.StandardMaterial("bg_wall", scene);
+        planeMaterial.diffuseTexture = new BABYLON.Texture("textures/mountain/mountain.png", scene);
+        planeMaterial.emissiveTexture = new BABYLON.Texture("textures/mountain/mountain.png", scene);
+
+        planeMaterial.diffuseTexture.hasAlpha = true;
+        planeMaterial.emissiveTexture.hasAlpha = true;
+        planeMaterial.diffuseTexture.wrapU = BABYLON.Texture.CLAMP_ADDRESSMODE;
+        planeMaterial.diffuseTexture.wrapV = BABYLON.Texture.CLAMP_ADDRESSMODE;
+        planeMaterial.emissiveTexture.wrapU = BABYLON.Texture.CLAMP_ADDRESSMODE;
+        planeMaterial.emissiveTexture.wrapV = BABYLON.Texture.CLAMP_ADDRESSMODE;
+
+        var planeMaterialInverse = new BABYLON.StandardMaterial("bg_wall", scene);
+        planeMaterialInverse.diffuseTexture = new BABYLON.Texture("textures/mountain/mountain-inverse.png", scene);
+        planeMaterialInverse.emissiveTexture = new BABYLON.Texture("textures/mountain/mountain-inverse.png", scene);
+
+        planeMaterialInverse.diffuseTexture.hasAlpha = true;
+        planeMaterialInverse.emissiveTexture.hasAlpha = true;
+        planeMaterialInverse.diffuseTexture.wrapU = BABYLON.Texture.CLAMP_ADDRESSMODE;
+        planeMaterialInverse.diffuseTexture.wrapV = BABYLON.Texture.CLAMP_ADDRESSMODE;
+        planeMaterialInverse.emissiveTexture.wrapU = BABYLON.Texture.CLAMP_ADDRESSMODE;
+        planeMaterialInverse.emissiveTexture.wrapV = BABYLON.Texture.CLAMP_ADDRESSMODE;
+
+        var backgroundMeshes = [];
+
+        function createBackGroundView(name, material, width, height, rotation, position) {
+            var backgroundPlane = BABYLON.MeshBuilder.CreatePlane(name, {width: width, height: height}, scene);
+            backgroundPlane.material = material;
+            if (rotation !== 0) {
+                backgroundPlane.rotation = rotation;
+            }
+            backgroundPlane.position = position;
+            backgroundMeshes.push(backgroundPlane);
+        }
+
+        createBackGroundView("bg_front", planeMaterialInverse, 1000, 100, new BABYLON.Vector3(0, -Math.PI / 2, 0), new BABYLON.Vector3(-groundSizeWidth / 2, 0, 0));
+        createBackGroundView("bg_back", planeMaterial, 1000, 100, new BABYLON.Vector3(0, Math.PI / 2, 0), new BABYLON.Vector3(groundSizeWidth / 2, 0, 0));
+        createBackGroundView("bg_right_a", planeMaterialInverse, 1500, 100, 0, new BABYLON.Vector3(groundSizeWidth/4, 0, groundSizeHeight/2));
+        createBackGroundView("bg_right_b", planeMaterial, 1500, 100, 0, new BABYLON.Vector3(-groundSizeWidth/4, 0, groundSizeHeight/2));
+        createBackGroundView("bg_left_a", planeMaterialInverse, 1500, 100, new BABYLON.Vector3(0, Math.PI, 0), new BABYLON.Vector3(groundSizeWidth/4, 0, -groundSizeHeight/2));
+        createBackGroundView("bg_left_b", planeMaterial, 1500, 100, new BABYLON.Vector3(0, Math.PI, 0), new BABYLON.Vector3(-groundSizeWidth/4, 0, -groundSizeHeight/2));
+
+        var landscape = BABYLON.Mesh.MergeMeshes(backgroundMeshes, true, true, undefined, false, true);
+        landscape.position.y = 48;
+
+        /*****************************End Landscape********************************************/
+
+        /*****************************Road********************************************/
+
+        var roadWidth = 1000;   // width of road
+        var roadHeight = 300;   // height of road
+        var roadHigh = -1.3;
+
+        var straightRoadRight = meshes["straight_road"];
+        var straightRoadLeft = straightRoadRight.createInstance();
+
+        straightRoadRight.position = new BABYLON.Vector3(0, roadHigh, 285);
+        straightRoadLeft.position = new BABYLON.Vector3(0, roadHigh, -285);
+        // straightRoadRight.scaling.z = 0.8;
+
+        var roundRoadUp = meshes["round_road"];
+        var roundRoadDown = roundRoadUp.createInstance();
+
+        roundRoadUp.position = new BABYLON.Vector3(-1285, roadHigh, 0);
+        roundRoadDown.rotation.y = Math.PI;
+        roundRoadDown.position = new BABYLON.Vector3(1285, roadHigh, 0);
+
+
+        /*****************************End Road********************************************/
+
+        /*****************************Car Station********************************************/
+
+        var carStationMat = new BABYLON.StandardMaterial("car_station", scene);
+        carStationMat.diffuseTexture = new BABYLON.Texture("textures/road/car-station.jpg", scene);
+
+        var carStation = BABYLON.MeshBuilder.CreateGround("car_station", {width: 45, height: 15}, scene);
+        carStation.position = new BABYLON.Vector3(-10, roadHigh, 322.5);
+        carStation.material = carStationMat;
+
+        /*****************************End Car Station********************************************/
+
+        /*****************************Trees********************************************/
+
+        var spriteManagerTrees = new BABYLON.SpriteManager("treesManager", "textures/tree/tree.png", 500, {width: 1024, height: 914}, scene);
+
+        //We create 2000 trees at random positions
+        for (let i = 0; i < 300; i++) {
+            var tree = new BABYLON.Sprite("tree", spriteManagerTrees);
+            tree.position.x = Math.random() * 2001 - 1000;
+            tree.position.z = Math.random() * 501 - 250;
+            tree.position.y = 7.5;
+            tree.size = 20;
+        }
+        for (let i = 0; i < 100; i++) {
+            var tree = new BABYLON.Sprite("tree", spriteManagerTrees);
+            tree.position.x = Math.random() * 2001 - 1000;
+            tree.position.z = Math.random() * 151 + 340;
+            tree.position.y = 7.5;
+            tree.size = 20;
+        }
+        for (let i = 0; i < 100; i++) {
+            var tree = new BABYLON.Sprite("tree", spriteManagerTrees);
+            tree.position.x = Math.random() * 2001 - 1000;
+            tree.position.z = Math.random() * -151 - 320;
+            tree.position.y = 7.5;
+            tree.size = 20;
+        }
+        /*****************************End Trees********************************************/
+
+        /**************************** Bot ************************************************/
+
+        var turnAngle = Math.PI / 589; // Math.PI / 235.49;   // radius of turning bot
+        var speedCar = 0.8;     // speed of bot
+
+        var botVehicles = [];
+        var botVehiclesCorrection = [];
+        var sumAngle = [];
+        var turnInterval = [];
+
+        function createBots(mesh, distance, count){
+            for (let i = 0; i < count; i++) {
+                var cloneBot = mesh.clone();
+                cloneBot.position.x = i * distance;
+                botVehicles[i] = cloneBot;
+                botVehiclesCorrection[i] = false;
+                sumAngle[i] = 0;
+                turnInterval[i] = 0;
+            }
+            mesh.setEnabled(false);
+        }
+
+        function startBotMoving(botIndex) {
+
+            if (botVehicles[botIndex].position.x > -roadWidth && botVehicles[botIndex].position.x < roadWidth && botVehicles[botIndex].position.z > 0) {
+                if (botVehiclesCorrection[botIndex] === true){
+                    botVehicles[botIndex].rotate(BABYLON.Axis.Y, -(sumAngle[botIndex]+Math.PI), BABYLON.Space.LOCAL);
+                    botVehicles[botIndex].position.x = roadWidth;
+                    botVehicles[botIndex].position.z = roadHeight;
+
+                    sumAngle[botIndex] = 0;
+                    botVehiclesCorrection[botIndex] = false;
+                }
+
+                botVehicles[botIndex].translate(BABYLON.Axis.X, -speedCar, BABYLON.Space.LOCAL);
+                botVehicles[botIndex].position.x = Math.round(botVehicles[botIndex].position.x * 100) / 100;
+                botVehicles[botIndex].position.z = Math.round(botVehicles[botIndex].position.z * 100) / 100;
+
+                turnInterval[botIndex] = 0;
+
+            }else if (botVehicles[botIndex].position.x <= -roadWidth || botVehicles[botIndex].position.x >= roadWidth){
+                botVehiclesCorrection[botIndex] = true;
+
+                if (turnInterval[botIndex] % 2 === 0){
+                    botVehicles[botIndex].rotate(BABYLON.Axis.Y, -turnAngle, BABYLON.Space.LOCAL);
+                    sumAngle[botIndex] += -turnAngle;
+                }
+                botVehicles[botIndex].translate(BABYLON.Axis.X, -speedCar, BABYLON.Space.LOCAL);
+
+                turnInterval[botIndex] += 1;
+
+            }else if (botVehicles[botIndex].position.x > -roadWidth && botVehicles[botIndex].position.x < roadWidth && botVehicles[botIndex].position.z < 0) {
+                if (botVehiclesCorrection[botIndex] === true){
+                    botVehicles[botIndex].rotate(BABYLON.Axis.Y, -(sumAngle[botIndex]+Math.PI), BABYLON.Space.LOCAL);
+                    botVehicles[botIndex].position.x = -roadWidth;
+                    botVehicles[botIndex].position.z = -roadHeight;
+
+                    sumAngle[botIndex] = 0;
+                    botVehiclesCorrection[botIndex] = false;
+                }
+
+                botVehicles[botIndex].translate(BABYLON.Axis.X, -speedCar, BABYLON.Space.LOCAL);
+                botVehicles[botIndex].position.x = Math.round(botVehicles[botIndex].position.x * 100) / 100;
+                botVehicles[botIndex].position.z = Math.round(botVehicles[botIndex].position.z * 100) / 100;
+
+                turnInterval[botIndex] = 0;
+            }
+
+            var botWheels = botVehicles[botIndex].getChildMeshes();
+            for (let i = 0; i < botWheels.length; i++){
+                botWheels[i].rotate(BABYLON.Axis.Y, Math.PI / 2, BABYLON.Space.LOCAL);
+            }
+        }
+
+        var botBody = meshes["bus"];
+        var botRightFrontWheel = meshes["wheelA"];
+        botRightFrontWheel.rotate(BABYLON.Axis.X, Math.PI / 2, BABYLON.Space.WORLD);
+        var botRightRareWheel = botRightFrontWheel.createInstance();
+
+        botRightFrontWheel.parent = botBody;
+        botRightRareWheel.parent = botBody;
+
+        botRightFrontWheel.position = new BABYLON.Vector3(-12.2, 0, 4);
+        botRightRareWheel.position = new BABYLON.Vector3(12.2, 0, 4);
+
+        var botLeftFrontWheel = meshes["wheelB"];
+        botLeftFrontWheel.rotate(BABYLON.Axis.X, Math.PI / 2, BABYLON.Space.WORLD);
+
+        var botLeftRareWheel = botLeftFrontWheel.createInstance();
+
+        botLeftFrontWheel.parent = botBody;
+        botLeftRareWheel.parent = botBody;
+
+        botLeftFrontWheel.position = new BABYLON.Vector3(-12.2, 0, -5);
+        botLeftRareWheel.position = new BABYLON.Vector3(12.2, 0, -5);
+
+        botBody.position = new BABYLON.Vector3(-100, 0.5, 300);
+
+        createBots(botBody, 100, 3);
+
+
+        /**************************** End Bot ************************************************/
+
         /***************************Car*********************************************/
 
         /*-----------------------Car Body------------------------------------------*/
@@ -151,89 +408,13 @@ var createScene = function() {
 
         /*---------------------Create Car Centre of Rotation-----------------------------*/
         var pivot = new BABYLON.Mesh("pivot", scene); //current centre of rotation
-        pivot.position.z = 350;
+        pivot.position.z = 372.5;
         carBody.parent = pivot;
         carBody.position = new BABYLON.Vector3(0, 0, -50);
 
         /*---------------------End Create Car Centre of Rotation-------------------------*/
 
-
         /*************************** End Car*********************************************/
-
-
-        /*****************************Add Ground********************************************/
-
-        var groundSizeWidth = 3000;
-        var groundSizeHeight = 1000;
-
-        var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: groundSizeWidth, height: groundSizeHeight}, scene);
-        var groundMaterial = new BABYLON.StandardMaterial("ground", scene);
-        groundMaterial.diffuseColor = new BABYLON.Color3(0.826, 0.706, 0.549);
-        ground.material = groundMaterial;
-        ground.position = new BABYLON.Vector3(0, -1.4, 0);
-
-        /*****************************End Add Ground********************************************/
-
-        /*****************************Path Road********************************************/
-
-        var points = [];
-        var n = 50; // number of points - more points the slower the car
-        var ra = 300; //radius
-        var offsetX = 1000;
-
-        points.push(new BABYLON.Vector3(0, 0.2, ra));
-        for (let i = 0; i < n + 1; i++) {
-            points.push(new BABYLON.Vector3((ra * Math.sin(Math.PI * (1 / n) * i) + offsetX), 0.2, ra * Math.cos(Math.PI * (1 / n) * i)));
-        }
-        // points.push(new BABYLON.Vector3(points[points.length-1]-offsetX, 0, -r));
-        for (let i = 0; i < n + 1; i++) {
-            points.push(new BABYLON.Vector3((ra * -Math.sin(Math.PI * (1 / n) * i) - offsetX), 0.2, ra * -Math.cos(Math.PI * (1 / n) * i)));
-        }
-        points.push(new BABYLON.Vector3(0, 0.2, ra));
-
-        var track = BABYLON.MeshBuilder.CreateLines('track', {points: points}, scene);
-        track.color = new BABYLON.Color3(1, 0, 0);
-
-        /*****************************End Path Road********************************************/
-
-        /*****************************Road********************************************/
-
-        var straightRoadRight = meshes["straight_road"];
-        var straightRoadLeft = straightRoadRight.createInstance();
-
-        straightRoadRight.position = new BABYLON.Vector3(0, -1.3, 285);
-        straightRoadLeft.position = new BABYLON.Vector3(0, -1.3, -285);
-        // straightRoadRight.scaling.z = 0.8;
-
-        var roundRoadUp = meshes["round_road"];
-        var roundRoadDown = roundRoadUp.createInstance();
-
-        roundRoadUp.position = new BABYLON.Vector3(-1285, -1.3, 0);
-        roundRoadDown.rotation.y = Math.PI;
-        roundRoadDown.position = new BABYLON.Vector3(1285, -1.3, 0);
-
-
-        /*****************************End Road********************************************/
-
-        /*****************************Particles to Show Movement********************************************/
-        // var box = BABYLON.MeshBuilder.CreateBox("box", {}, scene);
-        // box.position = new BABYLON.Vector3(20, 0, 10);
-        //
-        //
-        // var boxesSPS = new BABYLON.SolidParticleSystem("boxes", scene, {updatable: false});
-        //
-        // //function to position of grey boxes
-        // var set_boxes = function (particle, i, s) {
-        //     particle.position = new BABYLON.Vector3(-200 + Math.random() * 400, 0, -200 + Math.random() * 400);
-        // };
-        //
-        // //add 400 boxes
-        // boxesSPS.addShape(box, 400, {positionFunction: set_boxes});
-        // var boxes = boxesSPS.buildMesh(); // mesh of boxes
-        // boxes.material = new BABYLON.StandardMaterial("", scene);
-        // boxes.material.alpha = 0.25;
-        /*****************************Particles to Show Movement********************************************/
-
 
         /****************************Key Controls************************************************/
 
@@ -280,9 +461,14 @@ var createScene = function() {
 
         /****************************End Variables************************************************/
 
-
         /****************************Animation******************************************************/
         scene.registerBeforeRender(function () {
+            if (botVehicles) {
+                for (let i = 0; i < botVehicles.length; i++) {
+                    startBotMoving(i);
+                }
+            }
+
             updateGamepad(navigator.getGamepads()[0], D);
             if (gamepadApi.type === 'joystick') {
                 // console.log("W="+gamepadApi.axes[0]);
@@ -300,9 +486,10 @@ var createScene = function() {
                 brake = (gamepadApi.axes[2].toFixed(2)) * maxBrakeSpeed;
                 gear = gamepadApi.gear;
             }
-        });
+            // else {
+            //     forwardVector = 0;
+            // }
 
-        scene.registerAfterRender(function () {
             F = engine.getFps();
 
             /** Forward, Backward movement for wheel**/
@@ -347,7 +534,6 @@ var createScene = function() {
                 else
                     D = 0;
             }
-
             // if(!(map["a"] || map["A"]) && !(map["d"] || map["D"]) && rightVector===0 && theta !== 0) {
             //     if (theta > 0)
             //         deltaTheta = -Math.PI/252;
@@ -449,7 +635,6 @@ var createScene = function() {
             }
 
             // if((map["a"] || map["A"]) && -Math.PI/6 < theta) {
-            //
             //     deltaTheta = -Math.PI/252;
             //     theta += deltaTheta;
             //     pivotFI.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
@@ -484,7 +669,6 @@ var createScene = function() {
             //     R = NR;
             // }
 
-            // if(D > 0) {
             phi = D / (R * F);
 
             if (theta < 0) {
@@ -517,8 +701,6 @@ var createScene = function() {
                 wheelRI.rotate(BABYLON.Axis.Y, psi, BABYLON.Space.LOCAL);
                 wheelRO.rotate(BABYLON.Axis.Y, psi, BABYLON.Space.LOCAL);
             }
-            // }
-            // console.log('Theta -> '+theta+'\nRightVector -> '+rightVector);
         });
     }
     /****************************End Animation************************************************/
@@ -527,14 +709,12 @@ var createScene = function() {
 };
 /******* End of the create scene function ******/
 
-var scene = createScene(); //Call the createScene function
+var scene = createScene();
 
-// Register a render loop to repeatedly render the scene
 engine.runRenderLoop(function () {
     scene.render();
 });
 
-// Watch for browser/canvas resize events
 window.addEventListener("resize", function () {
     engine.resize();
 });

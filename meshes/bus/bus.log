@@ -1,0 +1,62 @@
+Exporter version: 6.3.1, Blender version: 2.82 (sub 7)
+========= Conversion from Blender to Babylon.js =========
+	Scene settings used :
+		Inline textures     :  false
+		Material Type       :  PBR
+		Positions Precision :  4
+		Normals Precision   :  3
+		UVs Precision       :  3
+		Vert Color Precision:  3
+		Mat Weight Precision:  2
+		Keep Z-up r-handed  :  no
+		Texture directory   :  C:\Users\Lukas\PhpstormProjects\CarSim\meshes\bus\
+	Python World class constructor completed
+	WARNING: No active camera has been assigned, or is not in a currently selected Blender layer
+	processing begun of mesh:  wheelA
+		processing begun of material:  Metal
+		processing begun of material:  Tire
+		processing begun of material:  Bolt
+		processing begun of multimaterial:  bus.Multimaterial#0
+		num positions      :  1918
+		num normals        :  1918
+		num tangents       :  0
+		num uvs            :  0
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  8298
+	processing begun of mesh:  bus
+		processing begun of material:  Body
+		processing begun of material:  Windows
+		processing begun of material:  karmi
+		processing begun of material:  RearLights
+		processing begun of material:  FrontLights
+		processing begun of material:  Indicators
+		processing begun of material:  FogLights
+		processing begun of multimaterial:  bus.Multimaterial#1
+		num positions      :  2631
+		num normals        :  2631
+		num tangents       :  0
+		num uvs            :  0
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  10329
+		WARNING: # of 0 area faces found:  54
+	processing begun of mesh:  wheelB
+		processing begun of material:  Metal.001
+		processing begun of material:  Tire.001
+		processing begun of material:  Bolt.001
+		processing begun of multimaterial:  bus.Multimaterial#2
+		num positions      :  1932
+		num normals        :  1932
+		num tangents       :  0
+		num uvs            :  0
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  8298
+========= Writing of JSON file started =========
+	writing mesh:  wheelA
+	writing mesh:  bus
+	writing mesh:  wheelB
+========= Writing of JSON file completed =========
+========= end of processing =========
+elapsed time:  0 min, 0.6218 secs
