@@ -170,15 +170,15 @@ var createScene = function() {
             backgroundMeshes.push(backgroundPlane);
         }
 
-        createBackGroundView("bg_front", planeMaterialInverse, 1000, 100, new BABYLON.Vector3(0, -Math.PI / 2, 0), new BABYLON.Vector3(-groundSizeWidth / 2, 0, 0));
-        createBackGroundView("bg_back", planeMaterial, 1000, 100, new BABYLON.Vector3(0, Math.PI / 2, 0), new BABYLON.Vector3(groundSizeWidth / 2, 0, 0));
-        createBackGroundView("bg_right_a", planeMaterialInverse, 1500, 100, 0, new BABYLON.Vector3(groundSizeWidth/4, 0, groundSizeHeight/2));
-        createBackGroundView("bg_right_b", planeMaterial, 1500, 100, 0, new BABYLON.Vector3(-groundSizeWidth/4, 0, groundSizeHeight/2));
-        createBackGroundView("bg_left_a", planeMaterialInverse, 1500, 100, new BABYLON.Vector3(0, Math.PI, 0), new BABYLON.Vector3(groundSizeWidth/4, 0, -groundSizeHeight/2));
-        createBackGroundView("bg_left_b", planeMaterial, 1500, 100, new BABYLON.Vector3(0, Math.PI, 0), new BABYLON.Vector3(-groundSizeWidth/4, 0, -groundSizeHeight/2));
+        createBackGroundView("bg_front", planeMaterialInverse, 1000, 200, new BABYLON.Vector3(0, -Math.PI / 2, 0), new BABYLON.Vector3(-groundSizeWidth / 2, 0, 0));
+        createBackGroundView("bg_back", planeMaterial, 1000, 200, new BABYLON.Vector3(0, Math.PI / 2, 0), new BABYLON.Vector3(groundSizeWidth / 2, 0, 0));
+        createBackGroundView("bg_right_a", planeMaterialInverse, 1500, 200, 0, new BABYLON.Vector3(groundSizeWidth/4, 0, groundSizeHeight/2));
+        createBackGroundView("bg_right_b", planeMaterial, 1500, 200, 0, new BABYLON.Vector3(-groundSizeWidth/4, 0, groundSizeHeight/2));
+        createBackGroundView("bg_left_a", planeMaterialInverse, 1500, 200, new BABYLON.Vector3(0, Math.PI, 0), new BABYLON.Vector3(groundSizeWidth/4, 0, -groundSizeHeight/2));
+        createBackGroundView("bg_left_b", planeMaterial, 1500, 200, new BABYLON.Vector3(0, Math.PI, 0), new BABYLON.Vector3(-groundSizeWidth/4, 0, -groundSizeHeight/2));
 
         var landscape = BABYLON.Mesh.MergeMeshes(backgroundMeshes, true, true, undefined, false, true);
-        landscape.position.y = 48;
+        landscape.position.y = 98;
 
         /*****************************End Landscape********************************************/
 
