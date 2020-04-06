@@ -119,14 +119,14 @@ function resetGamepad() {
 }
 
 window.addEventListener("gamepadconnected", function () {
-    console.log("Connected");
     var gamepad = navigator.getGamepads()[0];
     registerGamepad(gamepad);
     updateGamepad(gamepad);
-    console.log(gamepadApi);
+    console.log("Connected! Type: " + gamepadApi.type);
+    // console.log(gamepadApi);
 });
 
 window.addEventListener("gamepaddisconnected", function () {
-    console.log("Disconnected");
     resetGamepad();
+    console.log("Disconnected!");
 });

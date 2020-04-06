@@ -31,6 +31,10 @@ var createScene = function () {
 
     var camera2 = new BABYLON.UniversalCamera("camera2", new BABYLON.Vector3(-4, 3.2, -1.3), scene);
     camera2.setTarget(new BABYLON.Vector3(-5, 3.2, -1.3));
+    // camera2.inputs.clear();
+    // camera2.inputs.addMouse();
+    // camera2.attachControl(canvas, true);
+
     scene.activeCamera = camera;
 
     // lights
@@ -187,7 +191,6 @@ var createScene = function () {
 
         straightRoadRight.position = new BABYLON.Vector3(0, roadHigh, 285);
         straightRoadLeft.position = new BABYLON.Vector3(0, roadHigh, -285);
-        // straightRoadRight.scaling.z = 0.8;
 
         var roundRoadUp = meshes["round_road"];
         var roundRoadDown = roundRoadUp.createInstance();
@@ -419,18 +422,20 @@ var createScene = function () {
         scene.actionManager = new BABYLON.ActionManager(scene);
 
         scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, function (evt) {
-            map[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
-            if ((map["v"] || map["V"]) && switchCam) {
-                scene.activeCamera = camera2;
-                switchCam = !switchCam;
-            } else {
-                scene.activeCamera = camera;
-                switchCam = !switchCam;
-            }
+            map[evt.sourceEvent.key] = evt.sourceEvent.type === "keydown";
         }));
 
         scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt) {
-            map[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
+            map[evt.sourceEvent.key] = evt.sourceEvent.type === "keydown";
+
+            if (evt.sourceEvent.key === "v" || evt.sourceEvent.key === "V") {
+                if(switchCam){
+                    scene.activeCamera = camera2;
+                }else {
+                    scene.activeCamera = camera;
+                }
+                switchCam = !switchCam;
+            }
         }));
 
         /****************************End Key Controls************************************************/
@@ -439,8 +444,8 @@ var createScene = function () {
         /****************************Variables************************************************/
 
         var theta = 0;
-        var deltaTheta = 0;
-        var sw = Math.PI / 19;
+        var deltaTheta = Math.PI / 252;
+        var swTheta = Math.PI / 19;
         var D = 0; //distance translated per second
         var R = 50; //turning radius, initial set at pivot z value
         var NR; //Next turning radius on wheel turn
@@ -458,10 +463,56 @@ var createScene = function () {
         const turnBorder = Math.PI / 6;
 
         /****************************End Variables************************************************/
+        var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+
+        var panelHeading = new BABYLON.GUI.StackPanel();
+        panelHeading.background = "Gray";
+        panelHeading.width = "100%";
+        panelHeading.height = "50px";
+        panelHeading.isVertical = false;
+        panelHeading.alpha = 0.7;
+        // panelHeading.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+        panelHeading.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        advancedTexture.addControl(panelHeading);
+
+        var fpsText = new BABYLON.GUI.TextBlock();
+        fpsText.width = "150px";
+        // fpsText.height = "30px";
+        fpsText.color = "white";
+        fpsText.text = "Hello";
+        fpsText.fontSize = 24;
+        panelHeading.addControl(fpsText);
+
+        var speedCarText = new BABYLON.GUI.TextBlock();
+        speedCarText.width = "150px";
+        speedCarText.color = "white";
+        // speedCarText.text = "world";
+        speedCarText.fontSize = 24;
+        speedCarText.horizontalAlignment = 1;
+        panelHeading.addControl(speedCarText);
+
+        function turnCar(deltaTheta, swTheta) {
+            theta += deltaTheta;
+            pivotFI.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
+            pivotFO.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
+            pivotSW.rotate(BABYLON.Axis.X, deltaTheta + swTheta, BABYLON.Space.LOCAL);
+            if (Math.abs(theta) > 0.00000001) {
+                NR = A / 2 + L / Math.tan(theta);
+            } else {
+                theta = 0;
+                NR = 0;
+            }
+            pivot.translate(BABYLON.Axis.Z, NR - R, BABYLON.Space.LOCAL);
+            carBody.translate(BABYLON.Axis.Z, R - NR, BABYLON.Space.LOCAL);
+            R = NR;
+        }
 
         /****************************Animation******************************************************/
         scene.registerBeforeRender(function () {
-            // skybox.rotate(BABYLON.Axis.Y, 0.0001, BABYLON.Space.LOCAL);
+            F = engine.getFps();
+
+            // rotate skybox
+            skybox.rotate(BABYLON.Axis.Y, 0.0001, BABYLON.Space.LOCAL);
 
             // start moving bots on scene
             if (botVehicles) {
@@ -480,67 +531,81 @@ var createScene = function () {
 
             // checking gamepad event
             updateGamepad(navigator.getGamepads()[0], D);
-            if (gamepadApi.type === 'joystick') {
-                rightVector = gamepadApi.axes[0] * turnBorder;
-                forwardVector = gamepadApi.axes[1] * maxForwardSpeed;
-                brake = gamepadApi.axes[2] * maxBrakeSpeed;
-                gear = gamepadApi.gear;
 
-            } else if (gamepadApi.type === 'wheel') {
-                rightVector = (parseFloat(gamepadApi.axes[0].toFixed(2))) * turnBorder;
-                forwardVector = (parseFloat(gamepadApi.axes[1].toFixed(2))) * maxForwardSpeed;
-                brake = (parseFloat(gamepadApi.axes[2].toFixed(2))) * maxBrakeSpeed;
-                gear = gamepadApi.gear;
-            }
+            if (gamepadApi.type === 'joystick' || gamepadApi.type === 'wheel') {
+                if (gamepadApi.type === 'joystick') {
+                    rightVector = gamepadApi.axes[0] * turnBorder;
+                    forwardVector = gamepadApi.axes[1] * maxForwardSpeed;
+                    brake = gamepadApi.axes[2] * maxBrakeSpeed;
+                    gear = gamepadApi.gear;
 
-            F = engine.getFps();
+                } else if (gamepadApi.type === 'wheel') {
+                    rightVector = (parseFloat(gamepadApi.axes[0].toFixed(2))) * turnBorder;
+                    forwardVector = (parseFloat(gamepadApi.axes[1].toFixed(2))) * maxForwardSpeed;
+                    brake = (parseFloat(gamepadApi.axes[2].toFixed(2))) * maxBrakeSpeed;
+                    gear = gamepadApi.gear;
+                }
 
-            /** Forward, Backward movement for wheel**/
-            if (gear === -1) {
-                forwardVector /= 4;
-            }
+                if (gear === -1) {
+                    forwardVector /= 4;
+                }
 
-            if (forwardVector > 0 && D * gear < forwardVector) {
-                D += gear;
+                if (forwardVector > 0 && D * gear < forwardVector) {
+                    D += gear;
+                }
 
-                // if (gear === 1) {
-                //     D += 1;
-                // } else if (gear === -1) {
-                //     D -= 1;
-                // }
-            }
+                if (brake > 0 && (Math.abs(D) - brake) >= 0) {
+                    if (D >= 0) {
+                        D -= brake;
+                    } else {
+                        D += brake;
+                    }
+                }
 
-            if (brake > 0 && (Math.abs(D) - brake) >= 0) {
-                if (D >= 0) {
-                    D -= brake;
-                } else {
-                    D += brake;
+                if (rightVector < 0.0 && rightVector < theta) {
+                    turnCar(-deltaTheta, -swTheta);
+                }
+
+                if (rightVector <= 0.0 && rightVector > theta) {
+                    turnCar(deltaTheta, swTheta);
+                }
+
+                if (rightVector > 0.0 && rightVector > theta) {
+                    turnCar(deltaTheta, swTheta);
+                }
+
+                if (rightVector >= 0.0 && rightVector < theta) {
+                    turnCar(-deltaTheta, -swTheta);
+                }
+
+            }else {
+                if ((map["w"] || map["W"]) && D < maxForwardSpeed) {
+                    D += 1;
+                }
+
+                if ((map["s"] || map["S"]) && D > -maxForwardSpeed/4) {
+                    D -= 1;
+                }
+
+                if((map["a"] || map["A"]) && -Math.PI/6 < theta) {
+                    turnCar(-deltaTheta, -swTheta);
+                }
+
+                if((map["d"] || map["D"])  && theta < Math.PI/6) {
+                    turnCar(deltaTheta, swTheta);
+                }
+
+                if(!(map["a"] || map["A"]) && !(map["d"] || map["D"]) && theta !== 0) {
+                    if (theta > 0) {
+                        turnCar(-deltaTheta, -swTheta);
+                    }
+                    else if (theta < 0) {
+                        turnCar(deltaTheta, swTheta);
+                    }
                 }
             }
 
-            // if (D >= 0 && brake > 0) {
-            //     if (D - brake < 0) {
-            //         D = 0;
-            //     } else {
-            //         D -= brake;
-            //     }
-            // }else if (D < 0 && brake > 0) {
-            //     if (Math.abs(D) - brake < 0) {
-            //         D = 0;
-            //     } else {
-            //         D += brake;
-            //     }
-            // }
-
-            // if ((map["w"] || map["W"]) && D < maxForwardSpeed) {
-            //     D += 1;
-            // }
-            //
-            // if ((map["s"] || map["S"]) && D > -maxForwardSpeed) {
-            //     D -= 1;
-            // }
-
-            if (!(map["w"] || map["W"]) && !(map["s"] || map["S"]) && D !== 0 && forwardVector === 0) {
+            if (!(map["w"] || map["W"]) && !(map["s"] || map["S"]) && D !== 0) {
                 if (D > 0.05)
                     D -= 0.05;
                 else if (D < -0.05)
@@ -548,162 +613,9 @@ var createScene = function () {
                 else
                     D = 0;
             }
-            // if(!(map["a"] || map["A"]) && !(map["d"] || map["D"]) && rightVector===0 && theta !== 0) {
-            //     if (theta > 0)
-            //         deltaTheta = -Math.PI/252;
-            //     else if (theta < 0)
-            //         deltaTheta = Math.PI/252;
-            //     theta += deltaTheta;
-            //     pivotFI.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
-            //     pivotFO.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
-            //     if(Math.abs(theta) > 0.00000001) {
-            //         NR = A/2 +L/Math.tan(theta);
-            //     }
-            //     else {
-            //         theta = 0;
-            //         NR = 0;
-            //     }
-            //     pivot.translate(BABYLON.Axis.Z, NR - R, BABYLON.Space.LOCAL);
-            //     carBody.translate(BABYLON.Axis.Z, R - NR, BABYLON.Space.LOCAL);
-            //     R = NR;
-            // }
-
 
             var distance = D / F;
             psi = D / (r * F);
-
-            function turnCar(deltaTheta, sw) {
-                theta += deltaTheta;
-                pivotFI.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
-                pivotFO.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
-                pivotSW.rotate(BABYLON.Axis.X, deltaTheta + sw, BABYLON.Space.LOCAL);
-                if (Math.abs(theta) > 0.00000001) {
-                    NR = A / 2 + L / Math.tan(theta);
-                } else {
-                    theta = 0;
-                    NR = 0;
-                }
-                pivot.translate(BABYLON.Axis.Z, NR - R, BABYLON.Space.LOCAL);
-                carBody.translate(BABYLON.Axis.Z, R - NR, BABYLON.Space.LOCAL);
-                R = NR;
-            }
-
-            if (rightVector < 0.0 && rightVector < theta) {
-                turnCar(-Math.PI / 252, -Math.PI / 19);
-
-                // deltaTheta = -Math.PI / 252;
-                // theta += deltaTheta;
-                // pivotFI.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
-                // pivotFO.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
-                // pivotSW.rotate(BABYLON.Axis.X, deltaTheta - sw, BABYLON.Space.LOCAL);
-                // if (Math.abs(theta) > 0.00000001) {
-                //     NR = A / 2 + L / Math.tan(theta);
-                // } else {
-                //     theta = 0;
-                //     NR = 0;
-                // }
-                // pivot.translate(BABYLON.Axis.Z, NR - R, BABYLON.Space.LOCAL);
-                // carBody.translate(BABYLON.Axis.Z, R - NR, BABYLON.Space.LOCAL);
-                // R = NR;
-
-            }
-
-            if (rightVector <= 0.0 && rightVector > theta) {
-
-                turnCar(Math.PI / 252, Math.PI / 19);
-
-                // deltaTheta = Math.PI / 252;
-                // theta += deltaTheta;
-                // pivotFI.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
-                // pivotFO.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
-                // pivotSW.rotate(BABYLON.Axis.X, deltaTheta + sw, BABYLON.Space.LOCAL);
-                // if (Math.abs(theta) > 0.00000001) {
-                //     NR = A / 2 + L / Math.tan(theta);
-                // } else {
-                //     theta = 0;
-                //     NR = 0;
-                // }
-                // pivot.translate(BABYLON.Axis.Z, NR - R, BABYLON.Space.LOCAL);
-                // carBody.translate(BABYLON.Axis.Z, R - NR, BABYLON.Space.LOCAL);
-                // R = NR;
-
-            }
-
-            if (rightVector > 0.0 && rightVector > theta) {
-                turnCar(Math.PI / 252, Math.PI / 19);
-
-                // deltaTheta = Math.PI / 252;
-                // theta += deltaTheta;
-                // pivotFI.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
-                // pivotFO.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
-                // pivotSW.rotate(BABYLON.Axis.X, deltaTheta + sw, BABYLON.Space.LOCAL);
-                // if (Math.abs(theta) > 0.00000001) {
-                //     NR = A / 2 + L / Math.tan(theta);
-                // } else {
-                //     theta = 0;
-                //     NR = 0;
-                // }
-                // pivot.translate(BABYLON.Axis.Z, NR - R, BABYLON.Space.LOCAL);
-                // carBody.translate(BABYLON.Axis.Z, R - NR, BABYLON.Space.LOCAL);
-                // R = NR;
-
-            }
-
-            if (rightVector >= 0.0 && rightVector < theta) {
-                turnCar(-Math.PI / 252, -Math.PI / 19);
-
-                // deltaTheta = -Math.PI / 252;
-                // theta += deltaTheta;
-                // pivotFI.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
-                // pivotFO.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
-                // pivotSW.rotate(BABYLON.Axis.X, deltaTheta - sw, BABYLON.Space.LOCAL);
-                // if (Math.abs(theta) > 0.00000001) {
-                //     NR = A / 2 + L / Math.tan(theta);
-                // } else {
-                //     theta = 0;
-                //     NR = 0;
-                // }
-                // pivot.translate(BABYLON.Axis.Z, NR - R, BABYLON.Space.LOCAL);
-                // carBody.translate(BABYLON.Axis.Z, R - NR, BABYLON.Space.LOCAL);
-                // R = NR;
-
-            }
-
-            // if((map["a"] || map["A"]) && -Math.PI/6 < theta) {
-            //     deltaTheta = -Math.PI/252;
-            //     theta += deltaTheta;
-            //     pivotFI.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
-            //     pivotFO.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
-            //     if(Math.abs(theta) > 0.00000001) {
-            //         NR = A/2 +L/Math.tan(theta);
-            //     }
-            //     else {
-            //         theta = 0;
-            //         NR = 0;
-            //     }
-            //     pivot.translate(BABYLON.Axis.Z, NR - R, BABYLON.Space.LOCAL);
-            //     carBody.translate(BABYLON.Axis.Z, R - NR, BABYLON.Space.LOCAL);
-            //     R = NR;
-            // }
-            //
-            // if((map["d"] || map["D"])  && theta < Math.PI/6) {
-            //
-            //     deltaTheta = Math.PI/252;
-            //     theta += deltaTheta;
-            //     pivotFI.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
-            //     pivotFO.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
-            //     if(Math.abs(theta) > 0.00000001) {
-            //         NR = A/2 +L/Math.tan(theta);
-            //     }
-            //     else {
-            //         theta = 0;
-            //         NR = 0;
-            //     }
-            //     pivot.translate(BABYLON.Axis.Z, NR - R, BABYLON.Space.LOCAL);
-            //     carBody.translate(BABYLON.Axis.Z, R - NR, BABYLON.Space.LOCAL);
-            //     R = NR;
-            // }
-
             phi = D / (R * F);
 
             if (theta < 0) {
@@ -736,6 +648,9 @@ var createScene = function () {
                 wheelRI.rotate(BABYLON.Axis.Y, psi, BABYLON.Space.LOCAL);
                 wheelRO.rotate(BABYLON.Axis.Y, psi, BABYLON.Space.LOCAL);
             }
+
+            fpsText.text = "FPS: " + F.toFixed(0);
+            speedCarText.text = "Speed: " + Math.abs(D).toFixed(0);
         });
     }
 
