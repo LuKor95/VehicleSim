@@ -465,31 +465,28 @@ var createScene = function () {
         /****************************End Variables************************************************/
         var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
-        var panelHeading = new BABYLON.GUI.StackPanel();
-        panelHeading.background = "Gray";
-        panelHeading.width = "100%";
-        panelHeading.height = "50px";
-        panelHeading.isVertical = false;
-        panelHeading.alpha = 0.7;
-        // panelHeading.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        panelHeading.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-        advancedTexture.addControl(panelHeading);
+        var stackPanel = new BABYLON.GUI.StackPanel();
+        stackPanel.background = new BABYLON.Color3(0, 0, 0);
+        stackPanel.width = "100%";
+        stackPanel.height = "50px";
+        stackPanel.isVertical = false;
+        stackPanel.alpha = 0.8;
+        stackPanel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        advancedTexture.addControl(stackPanel);
 
         var fpsText = new BABYLON.GUI.TextBlock();
-        fpsText.width = "150px";
-        // fpsText.height = "30px";
+        fpsText.width = "200px";
         fpsText.color = "white";
         fpsText.text = "Hello";
-        fpsText.fontSize = 24;
-        panelHeading.addControl(fpsText);
+        fpsText.fontSize = 20;
+        stackPanel.addControl(fpsText);
 
         var speedCarText = new BABYLON.GUI.TextBlock();
-        speedCarText.width = "150px";
+        speedCarText.width = "200px";
         speedCarText.color = "white";
-        // speedCarText.text = "world";
-        speedCarText.fontSize = 24;
+        speedCarText.fontSize = 20;
         speedCarText.horizontalAlignment = 1;
-        panelHeading.addControl(speedCarText);
+        stackPanel.addControl(speedCarText);
 
         function turnCar(deltaTheta, swTheta) {
             theta += deltaTheta;
@@ -650,7 +647,7 @@ var createScene = function () {
             }
 
             fpsText.text = "FPS: " + F.toFixed(0);
-            speedCarText.text = "Speed: " + Math.abs(D).toFixed(0);
+            speedCarText.text = "Rýchlosť: " + Math.abs(D).toFixed(0)+ " km/h";
         });
     }
 
