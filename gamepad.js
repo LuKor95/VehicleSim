@@ -31,9 +31,18 @@ const axesSync = {
     wheel_linux: [0, 1, 2]
 };
 
+var gamepadApi = {
+    connected: false,
+    type: '',
+    platform: '',
+    buttons: [],
+    axes: [],
+    gear: 1
+};
+
 function detectUserPlatform() {
-    for (let i = 0; i < supportedPlatform.length; i++){
-        if (window.navigator.platform === supportedPlatform[i].name){
+    for (let i = 0; i < supportedPlatform.length; i++) {
+        if (window.navigator.platform === supportedPlatform[i].name) {
             return supportedPlatform[i].type;
         }
     }
@@ -41,8 +50,8 @@ function detectUserPlatform() {
 }
 
 function detectUserGamepad(gamepad) {
-    for (let i = 0; i < supportedGamepad.length; i++){
-        if (gamepad.id.includes(supportedGamepad[i].name)){
+    for (let i = 0; i < supportedGamepad.length; i++) {
+        if (gamepad.id.includes(supportedGamepad[i].name)) {
             return supportedGamepad[i].type;
         }
     }
@@ -55,47 +64,53 @@ function registerGamepad(gamepad) {
     gamepadApi.platform = detectUserPlatform();
 }
 
-function updateGamepad(gamepad, distance){
-    if (gamepad && gamepadApi.connected && gamepadApi.type && gamepadApi.platform){
-        let axesGamepad = axesSync[gamepadApi.type+'_'+gamepadApi.platform];
+function updateGamepad(gamepad, distance) {
+    if (gamepad && gamepadApi.connected && gamepadApi.type && gamepadApi.platform) {
+        let axesGamepad = axesSync[gamepadApi.type + '_' + gamepadApi.platform];
         gamepadApi.buttons = gamepad.buttons;
 
-        if (gamepadApi.type === 'joystick'){
-            gamepadApi.axes[0] = gamepad.axes[axesGamepad[0]].toFixed(2);
+        if (gamepadApi.type === 'joystick') {
+            gamepadApi.axes[0] = parseFloat(gamepad.axes[axesGamepad[0]].toFixed(2));
 
-            if (gamepad.axes[axesGamepad[1]].toFixed(2) < 0){
+            if (parseFloat(gamepad.axes[axesGamepad[1]].toFixed(2)) < 0) {
                 gamepadApi.axes[1] = Math.abs(gamepad.axes[axesGamepad[1]]);
                 gamepadApi.axes[2] = 0;
-            }else if (gamepad.axes[axesGamepad[1]].toFixed(2) > 0){
+            } else if (parseFloat(gamepad.axes[axesGamepad[1]].toFixed(2)) > 0) {
                 gamepadApi.axes[1] = 0;
                 gamepadApi.axes[2] = Math.abs(gamepad.axes[axesGamepad[1]]);
-            }else {
+            } else {
                 gamepadApi.axes[1] = 0;
                 gamepadApi.axes[2] = 0;
             }
-            if (gamepad.axes[axesGamepad[2]].toFixed(2) <= 0 && distance === 0){
-                gamepadApi.gear = 1;
-            }else if (gamepad.axes[axesGamepad[2]].toFixed(2) > 0 && distance === 0){
-                gamepadApi.gear = -1;
+
+            if (distance === 0) {
+                if (parseFloat(gamepad.axes[axesGamepad[2]].toFixed(2)) === -1) {
+                    gamepadApi.gear = 1;
+                } else if (parseFloat(gamepad.axes[axesGamepad[2]].toFixed(2)) === 1) {
+                    gamepadApi.gear = -1;
+                } else {
+                    gamepadApi.gear = 0;
+                }
             }
-        }else if (gamepadApi.type === 'wheel'){
+        } else if (gamepadApi.type === 'wheel') {
 
             gamepadApi.axes[0] = gamepad.axes[axesGamepad[0]];
             gamepadApi.axes[1] = (1 - gamepad.axes[axesGamepad[1]]) / 2;
             gamepadApi.axes[2] = (1 - gamepad.axes[axesGamepad[2]]) / 2;
 
-            if (gamepadApi.buttons[4].pressed && gamepadApi.gear !== 1 && distance === 0){
-                gamepadApi.gear = 1;
+            if (distance === 0) {
+                if (gamepadApi.buttons[4].pressed && gamepadApi.gear !== 1) {
+                    gamepadApi.gear = 1;
+                }
+                if (gamepadApi.buttons[5].pressed && gamepadApi.gear !== -1) {
+                    gamepadApi.gear = -1;
+                }
             }
-            if (gamepadApi.buttons[5].pressed && gamepadApi.gear !== -1  && distance === 0){
-                gamepadApi.gear = -1;
-            }
-
         }
     }
 }
 
-function resetGamepad(){
+function resetGamepad() {
     gamepadApi.connected = false;
     gamepadApi.type = '';
     gamepadApi.axes = [];
@@ -103,17 +118,15 @@ function resetGamepad(){
 
 }
 
-window.addEventListener("gamepadconnected", function (e) {
-    console.log("Connected");
-    var gamepad = navigator.getGamepads()[e.gamepad.index];
+window.addEventListener("gamepadconnected", function () {
+    var gamepad = navigator.getGamepads()[0];
     registerGamepad(gamepad);
     updateGamepad(gamepad);
-    console.log(gamepadApi);
+    console.log("Connected! Type: " + gamepadApi.type);
+    // console.log(gamepadApi);
 });
 
-window.addEventListener("gamepaddisconnected", function (e) {
-    console.log("Disconnected");
+window.addEventListener("gamepaddisconnected", function () {
     resetGamepad();
+    console.log("Disconnected!");
 });
-
-/*****************************Detect Devices*********************************************/
