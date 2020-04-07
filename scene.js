@@ -1,15 +1,11 @@
-var canvas = document.getElementById("renderCanvas"); // Get the canvas element
-var engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
-
-/*****************************Detect Devices*********************************************/
-
 var forwardVector;
 var rightVector;
 var brake;
 var gear;
 
 
-/******* Add the create scene function ******/
+/******* Create scene ******/
+
 var createScene = function () {
     var scene = new BABYLON.Scene(engine);
 
@@ -20,7 +16,9 @@ var createScene = function () {
     var isBotReady = false;
     var switchCam = true;
 
-    // cameras
+
+    /******* Cameras ******/
+
     var camera = new BABYLON.ArcRotateCamera("camera1", 0, 0, 20, new BABYLON.Vector3(-2.5, 0, 0), scene);
     camera.setPosition(new BABYLON.Vector3(18.5, 5.5, 0));
     camera.upperBetaLimit = (Math.PI / 2);
@@ -37,12 +35,16 @@ var createScene = function () {
 
     scene.activeCamera = camera;
 
-    // lights
+
+    /******* Lights ******/
+
     var light1 = new BABYLON.DirectionalLight("light1", new BABYLON.Vector3(1, 2, 0), scene);
     var light2 = new BABYLON.HemisphericLight("light2", new BABYLON.Vector3(0, 1, 0), scene);
     light2.intensity = 0.75;
 
-    // skybox
+
+    /******* Skybox ******/
+
     var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size: 5000.0}, scene);
     var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
     skyboxMaterial.backFaceCulling = false;
@@ -53,7 +55,9 @@ var createScene = function () {
     skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
     skybox.material = skyboxMaterial;
 
-    // loading assets
+
+    /******* Loading assets ******/
+
     var assetsManager = new BABYLON.AssetsManager(scene);
     var roadTask = assetsManager.addMeshTask("", "", "meshes/road/", "road.babylon");
     var botTask = assetsManager.addMeshTask("", "", "meshes/bus/", "bus.babylon");
@@ -94,7 +98,8 @@ var createScene = function () {
 
     function renderScene() {
 
-        /*****************************Ground********************************************/
+
+        /******* Ground ******/
 
         var groundSizeWidth = 3000;
         var groundSizeHeight = 1000;
@@ -108,31 +113,8 @@ var createScene = function () {
         ground.material = groundMaterial;
         ground.position = new BABYLON.Vector3(0, -1.4, 0);
 
-        /*****************************Add Ground********************************************/
 
-        /*****************************Path Road********************************************/
-
-        // var points = [];
-        // var n = 50; // number of points - more points the slower the car
-        // var ra = 300; //radius
-        // var offsetX = 1000;
-        //
-        // points.push(new BABYLON.Vector3(0, 0.2, ra));
-        // for (let i = 0; i < n + 1; i++) {
-        //     points.push(new BABYLON.Vector3((ra * Math.sin(Math.PI * (1 / n) * i) + offsetX), 0.2, ra * Math.cos(Math.PI * (1 / n) * i)));
-        // }
-        // // points.push(new BABYLON.Vector3(points[points.length-1]-offsetX, 0, -r));
-        // for (let i = 0; i < n + 1; i++) {
-        //     points.push(new BABYLON.Vector3((ra * -Math.sin(Math.PI * (1 / n) * i) - offsetX), 0.2, ra * -Math.cos(Math.PI * (1 / n) * i)));
-        // }
-        // points.push(new BABYLON.Vector3(0, 0.2, ra));
-        //
-        // var track = BABYLON.MeshBuilder.CreateLines('track', {points: points}, scene);
-        // track.color = new BABYLON.Color3(1, 0, 0);
-
-        /*****************************End Path Road********************************************/
-
-        /*****************************Landscape********************************************/
+        /******* Landscape ******/
 
         var planeMaterial = new BABYLON.StandardMaterial("bg_wall", scene);
         planeMaterial.diffuseTexture = new BABYLON.Texture("textures/mountain/mountain.png", scene);
@@ -178,9 +160,8 @@ var createScene = function () {
         var landscape = BABYLON.Mesh.MergeMeshes(backgroundMeshes, true, true, undefined, false, true);
         landscape.position.y = 98;
 
-        /*****************************End Landscape********************************************/
 
-        /*****************************Road********************************************/
+        /******* Road ******/
 
         var roadWidth = 1000;   // width of road
         var roadHeight = 300;   // height of road
@@ -200,9 +181,7 @@ var createScene = function () {
         roundRoadDown.position = new BABYLON.Vector3(1285, roadHigh, 0);
 
 
-        /*****************************End Road********************************************/
-
-        /*****************************Car Station********************************************/
+        /******* Car Station ******/
 
         var carStationMat = new BABYLON.StandardMaterial("car_station", scene);
         carStationMat.diffuseTexture = new BABYLON.Texture("textures/road/car-station.jpg", scene);
@@ -211,43 +190,41 @@ var createScene = function () {
         carStation.position = new BABYLON.Vector3(-10, roadHigh, 322.5);
         carStation.material = carStationMat;
 
-        /*****************************End Car Station********************************************/
 
-        /*****************************Trees********************************************/
+        /******* Trees ******/
+            //v ubuntu zakomentovat
+        var spriteManagerTrees = new BABYLON.SpriteManager("treesManager", "textures/tree/tree.png", 300, {
+                width: 1024,
+                height: 914
+            }, scene);
 
-        var spriteManagerTrees = new BABYLON.SpriteManager("treesManager", "textures/tree/tree.png", 500, {
-            width: 1024,
-            height: 914
-        }, scene);
-
-        //We create 2000 trees at random positions
-        for (let i = 0; i < 300; i++) {
+        for (var i = 0; i < 200; i++) {
             var tree = new BABYLON.Sprite("tree", spriteManagerTrees);
             tree.position.x = Math.random() * 2001 - 1000;
             tree.position.z = Math.random() * 501 - 250;
             tree.position.y = 7.5;
             tree.size = 20;
         }
-        for (let i = 0; i < 100; i++) {
+        for (var i = 0; i < 50; i++) {
             var tree = new BABYLON.Sprite("tree", spriteManagerTrees);
             tree.position.x = Math.random() * 2001 - 1000;
             tree.position.z = Math.random() * 151 + 340;
             tree.position.y = 7.5;
             tree.size = 20;
         }
-        for (let i = 0; i < 100; i++) {
+        for (var i = 0; i < 50; i++) {
             var tree = new BABYLON.Sprite("tree", spriteManagerTrees);
             tree.position.x = Math.random() * 2001 - 1000;
             tree.position.z = Math.random() * -151 - 320;
             tree.position.y = 7.5;
             tree.size = 20;
         }
-        /*****************************End Trees********************************************/
 
-        /**************************** Bot ************************************************/
 
-        var turnAngle = Math.PI / 589; // Math.PI / 235.49;   // radius of turning bot
-        var speedCar = 0.8;     // speed of bot
+        /******* Bot - mesh ******/
+
+        var turnAngle = Math.PI / 589;  // radius of turning bot
+        var speedCar = 0.8;             // speed of bot
 
         var botVehicles = [];
         var botVehiclesCorrection = [];
@@ -255,7 +232,7 @@ var createScene = function () {
         var turnInterval = [];
 
         function createBots(mesh, distance, count) {
-            for (let i = 0; i < count; i++) {
+            for (var i = 0; i < count; i++) {
                 var cloneBot = mesh.clone();
                 cloneBot.position.x = i * distance;
                 botVehicles[i] = cloneBot;
@@ -313,7 +290,7 @@ var createScene = function () {
             }
 
             var botWheels = botVehicles[botIndex].getChildMeshes();
-            for (let i = 0; i < botWheels.length; i++) {
+            for (var i = 0; i < botWheels.length; i++) {
                 botWheels[i].rotate(BABYLON.Axis.Y, Math.PI / 2, BABYLON.Space.LOCAL);
             }
         }
@@ -345,20 +322,15 @@ var createScene = function () {
         createBots(botBody, 100, 3);
 
 
-        /**************************** End Bot ************************************************/
+        /******* Car ******/
 
-        /***************************Car*********************************************/
-
-        /*-----------------------Car Body------------------------------------------*/
+            // Car Body
         var carBody = meshes["car"];
 
         camera.parent = carBody;
         camera2.parent = carBody;
 
-        /*-----------------------End Car Body------------------------------------------*/
-
-        /*-----------------------Steering Wheel--------------------------------------*/
-
+        // Steering Wheel
         var pivotSW = new BABYLON.Mesh("pivotSW", scene);
         pivotSW.parent = carBody;
         pivotSW.rotate(BABYLON.Axis.Z, Math.PI / 12, BABYLON.Space.LOCAL);
@@ -367,19 +339,13 @@ var createScene = function () {
         var steering_wheel = meshes["steering_wheel"];
         steering_wheel.parent = pivotSW;
 
-        /*-----------------------End Steering Wheel--------------------------------------*/
-
-        /*-----------------------Wheel------------------------------------------*/
-
+        // Wheels
         var wheelFI = meshes["pneu_left"];
         var wheelFO = meshes["pneu_right"];
 
-        //rotate wheel so tread in xz plane
         wheelFI.rotate(BABYLON.Axis.X, Math.PI / 2, BABYLON.Space.WORLD);
         wheelFO.rotate(BABYLON.Axis.X, Math.PI / 2, BABYLON.Space.WORLD);
-        /*-----------------------End Wheel------------------------------------------*/
 
-        /*-------------------Pivots for Front Wheels-----------------------------------*/
         var pivotFI = new BABYLON.Mesh("pivotFI", scene);
         pivotFI.parent = carBody;
         pivotFI.position = new BABYLON.Vector3(-9.4, 0, -2.8);
@@ -387,10 +353,7 @@ var createScene = function () {
         var pivotFO = new BABYLON.Mesh("pivotFO", scene);
         pivotFO.parent = carBody;
         pivotFO.position = new BABYLON.Vector3(-9.4, 0, 2.8);
-        /*----------------End Pivots for Front Wheels--------------------------------*/
 
-        /*------------Create other Wheels as Instances, Parent and Position----------*/
-        // var wheelFO = wheelFI.createInstance("FO");
         wheelFO.parent = pivotFO;
         wheelFO.position = new BABYLON.Vector3(0, 0, 0);
 
@@ -404,21 +367,17 @@ var createScene = function () {
 
         wheelFI.parent = pivotFI;
         wheelFI.position = new BABYLON.Vector3(0, 0, 0);
-        /*------------End Create other Wheels as Instances, Parent and Position----------*/
 
-        /*---------------------Create Car Centre of Rotation-----------------------------*/
+        // Car centre of rotation
         var pivot = new BABYLON.Mesh("pivot", scene); //current centre of rotation
         pivot.position.z = 372.5;
         carBody.parent = pivot;
         carBody.position = new BABYLON.Vector3(0, 0, -50);
 
-        /*---------------------End Create Car Centre of Rotation-------------------------*/
 
-        /*************************** End Car*********************************************/
+        /******* Keyboard control ******/
 
-        /****************************Key Controls************************************************/
-
-        var map = {}; //object for multiple key presses
+        var map = {};
         scene.actionManager = new BABYLON.ActionManager(scene);
 
         scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, function (evt) {
@@ -429,40 +388,18 @@ var createScene = function () {
             map[evt.sourceEvent.key] = evt.sourceEvent.type === "keydown";
 
             if (evt.sourceEvent.key === "v" || evt.sourceEvent.key === "V") {
-                if(switchCam){
+                if (switchCam) {
                     scene.activeCamera = camera2;
-                }else {
+                } else {
                     scene.activeCamera = camera;
                 }
                 switchCam = !switchCam;
             }
         }));
 
-        /****************************End Key Controls************************************************/
 
-
-        /****************************Variables************************************************/
-
-        var theta = 0;
-        var deltaTheta = Math.PI / 252;
-        var swTheta = Math.PI / 19;
-        var D = 0; //distance translated per second
-        var R = 50; //turning radius, initial set at pivot z value
-        var NR; //Next turning radius on wheel turn
-        var A = 2; // axel length
-        var L = 10; //distance between wheel pivots
-        var r = 1.5; // wheel radius
-        var psi, psiRI, psiRO, psiFI, psiFO; //wheel rotations
-        var phi; //rotation of car when turning
-
-        var F; // frames per second
-
-        const maxForwardSpeed = 100;
-        const maxBrakeSpeed = maxForwardSpeed / 50;
-
-        const turnBorder = Math.PI / 6;
-
-        /****************************End Variables************************************************/
+        /******* Text at the top of screen ******/
+            // ubuntu zle reagovalo na toto
         var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
         var stackPanel = new BABYLON.GUI.StackPanel();
@@ -488,6 +425,29 @@ var createScene = function () {
         speedCarText.horizontalAlignment = 1;
         stackPanel.addControl(speedCarText);
 
+
+        /******* Variables and function for animation ******/
+
+        var theta = 0;
+        var deltaTheta = Math.PI / 252;
+        var swTheta = Math.PI / 19;
+        var D = 0; //distance translated per second
+        var R = 50; //turning radius, initial set at pivot z value
+        var NR; //Next turning radius on wheel turn
+        var A = 2; // axel length
+        var L = 10; //distance between wheel pivots
+        var r = 1.5; // wheel radius
+        var psi, psiRI, psiRO, psiFI, psiFO; //wheel rotations
+        var phi; //rotation of car when turning
+
+        var F; // frames per second
+
+        var maxForwardSpeed = 100;
+        var maxBrakeSpeed = maxForwardSpeed / 50;
+
+        var turnBorder = Math.PI / 6;
+
+
         function turnCar(deltaTheta, swTheta) {
             theta += deltaTheta;
             pivotFI.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
@@ -504,23 +464,25 @@ var createScene = function () {
             R = NR;
         }
 
-        /****************************Animation******************************************************/
+
+        /******* Animation ******/
+
         scene.registerBeforeRender(function () {
             F = engine.getFps();
 
-            // rotate skybox
+            // rotate skybox // v ubuntu koli zrychleniu zakomentovane
             skybox.rotate(BABYLON.Axis.Y, 0.0001, BABYLON.Space.LOCAL);
 
             // start moving bots on scene
             if (botVehicles) {
-                for (let i = 0; i < botVehicles.length; i++) {
+                for (var i = 0; i < botVehicles.length; i++) {
                     startBotMoving(i);
                 }
             }
 
             // check if car is in scene
-            for (let i = 0; i < backgroundMeshes.length; i++) {
-                if (carBody.intersectsMesh(backgroundMeshes[i], false)){
+            for (var i = 0; i < backgroundMeshes.length; i++) {
+                if (carBody.intersectsMesh(backgroundMeshes[i], false)) {
                     D = -D;
                     break;
                 }
@@ -529,14 +491,14 @@ var createScene = function () {
             // checking gamepad event
             updateGamepad(navigator.getGamepads()[0], D);
 
-            if (gamepadApi.type === 'joystick' || gamepadApi.type === 'wheel') {
-                if (gamepadApi.type === 'joystick') {
+            if (gamepadApi.type === "joystick" || gamepadApi.type === "wheel") {
+                if (gamepadApi.type === "joystick") {
                     rightVector = gamepadApi.axes[0] * turnBorder;
                     forwardVector = gamepadApi.axes[1] * maxForwardSpeed;
                     brake = gamepadApi.axes[2] * maxBrakeSpeed;
                     gear = gamepadApi.gear;
 
-                } else if (gamepadApi.type === 'wheel') {
+                } else if (gamepadApi.type === "wheel") {
                     rightVector = (parseFloat(gamepadApi.axes[0].toFixed(2))) * turnBorder;
                     forwardVector = (parseFloat(gamepadApi.axes[1].toFixed(2))) * maxForwardSpeed;
                     brake = (parseFloat(gamepadApi.axes[2].toFixed(2))) * maxBrakeSpeed;
@@ -575,28 +537,27 @@ var createScene = function () {
                     turnCar(-deltaTheta, -swTheta);
                 }
 
-            }else {
+            } else {
                 if ((map["w"] || map["W"]) && D < maxForwardSpeed) {
                     D += 1;
                 }
 
-                if ((map["s"] || map["S"]) && D > -maxForwardSpeed/4) {
+                if ((map["s"] || map["S"]) && D > -maxForwardSpeed / 4) {
                     D -= 1;
                 }
 
-                if((map["a"] || map["A"]) && -Math.PI/6 < theta) {
+                if ((map["a"] || map["A"]) && -Math.PI / 6 < theta) {
                     turnCar(-deltaTheta, -swTheta);
                 }
 
-                if((map["d"] || map["D"])  && theta < Math.PI/6) {
+                if ((map["d"] || map["D"]) && theta < Math.PI / 6) {
                     turnCar(deltaTheta, swTheta);
                 }
 
-                if(!(map["a"] || map["A"]) && !(map["d"] || map["D"]) && theta !== 0) {
+                if (!(map["a"] || map["A"]) && !(map["d"] || map["D"]) && theta !== 0) {
                     if (theta > 0) {
                         turnCar(-deltaTheta, -swTheta);
-                    }
-                    else if (theta < 0) {
+                    } else if (theta < 0) {
                         turnCar(deltaTheta, swTheta);
                     }
                 }
@@ -646,23 +607,11 @@ var createScene = function () {
                 wheelRO.rotate(BABYLON.Axis.Y, psi, BABYLON.Space.LOCAL);
             }
 
+            // Update text info every frame
             fpsText.text = "FPS: " + F.toFixed(0);
-            speedCarText.text = "Rýchlosť: " + Math.abs(D).toFixed(0)+ " km/h";
+            speedCarText.text = "Rýchlosť: " + Math.abs(D).toFixed(0) + " km/h";
         });
     }
 
-    /****************************End Animation************************************************/
-
     return scene;
 };
-/******* End of the create scene function ******/
-
-var scene = createScene();
-
-engine.runRenderLoop(function () {
-    scene.render();
-});
-
-window.addEventListener("resize", function () {
-    engine.resize();
-});

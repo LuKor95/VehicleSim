@@ -1,4 +1,4 @@
-const supportedPlatform = [
+var supportedPlatform = [
     {
         id: 0,
         name: 'Win32',
@@ -11,7 +11,7 @@ const supportedPlatform = [
     }
 ];
 
-const supportedGamepad = [
+var supportedGamepad = [
     {
         id: 0,
         name: 'T.Flight Stick X',
@@ -24,7 +24,7 @@ const supportedGamepad = [
     }
 ];
 
-const axesSync = {
+var axesSync = {
     joystick_windows: [0, 1, 6],
     joystick_linux: [0, 1, 3],
     wheel_windows: [0, 1, 2],
@@ -41,7 +41,7 @@ var gamepadApi = {
 };
 
 function detectUserPlatform() {
-    for (let i = 0; i < supportedPlatform.length; i++) {
+    for (var i = 0; i < supportedPlatform.length; i++) {
         if (window.navigator.platform === supportedPlatform[i].name) {
             return supportedPlatform[i].type;
         }
@@ -50,7 +50,7 @@ function detectUserPlatform() {
 }
 
 function detectUserGamepad(gamepad) {
-    for (let i = 0; i < supportedGamepad.length; i++) {
+    for (var i = 0; i < supportedGamepad.length; i++) {
         if (gamepad.id.includes(supportedGamepad[i].name)) {
             return supportedGamepad[i].type;
         }
@@ -66,7 +66,7 @@ function registerGamepad(gamepad) {
 
 function updateGamepad(gamepad, distance) {
     if (gamepad && gamepadApi.connected && gamepadApi.type && gamepadApi.platform) {
-        let axesGamepad = axesSync[gamepadApi.type + '_' + gamepadApi.platform];
+        var axesGamepad = axesSync[gamepadApi.type + '_' + gamepadApi.platform];
         gamepadApi.buttons = gamepad.buttons;
 
         if (gamepadApi.type === 'joystick') {
@@ -123,7 +123,6 @@ window.addEventListener("gamepadconnected", function () {
     registerGamepad(gamepad);
     updateGamepad(gamepad);
     console.log("Connected! Type: " + gamepadApi.type);
-    // console.log(gamepadApi);
 });
 
 window.addEventListener("gamepaddisconnected", function () {
