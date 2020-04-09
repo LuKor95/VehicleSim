@@ -1,10 +1,11 @@
-var canvas = document.getElementById("renderCanvas"); // Get the canvas element
-var startButton = document.getElementById("startButton"); // Get the canvas element
+var canvas = document.getElementById("renderCanvas");
+var startButton = document.getElementById("startButton");
+var mainContent = document.getElementById("mainContent");
 
-var engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
+var engine = new BABYLON.Engine(canvas, true);
 
 startButton.onclick = function () {
-    startButton.remove();
+    mainContent.classList.add("d-none");
 
     var scene = createScene();
 
