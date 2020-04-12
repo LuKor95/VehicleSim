@@ -1,3 +1,6 @@
+// var canvas = document.getElementById("renderCanvas");
+// var engine = new BABYLON.Engine(canvas, true);
+
 var forwardVector;
 var rightVector;
 var brake;
@@ -11,11 +14,10 @@ var createScene = function () {
 
     var meshes = {};
 
-    var isVehicleReady = false;
+    var isCarReady = false;
     var isRoadReady = false;
     var isBotReady = false;
     var switchCam = true;
-
 
     /******* Cameras ******/
 
@@ -29,9 +31,6 @@ var createScene = function () {
 
     var camera2 = new BABYLON.UniversalCamera("camera2", new BABYLON.Vector3(-4, 3.2, -1.3), scene);
     camera2.setTarget(new BABYLON.Vector3(-5, 3.2, -1.3));
-    // camera2.inputs.clear();
-    // camera2.inputs.addMouse();
-    // camera2.attachControl(canvas, true);
 
     scene.activeCamera = camera;
 
@@ -61,7 +60,7 @@ var createScene = function () {
     var assetsManager = new BABYLON.AssetsManager(scene);
     var roadTask = assetsManager.addMeshTask("", "", "meshes/road/", "road.babylon");
     var botTask = assetsManager.addMeshTask("", "", "meshes/bus/", "bus.babylon");
-    var meshTask = assetsManager.addMeshTask("", "", "meshes/car/", "dong-feng.babylon");
+    var carTask = assetsManager.addMeshTask("", "", "meshes/car/", "dong-feng.babylon");
 
     roadTask.onSuccess = function (task) {
         task.loadedMeshes.forEach(function (mesh) {
@@ -79,11 +78,11 @@ var createScene = function () {
         isAllMeshReady();
     };
 
-    meshTask.onSuccess = function (task) {
+    carTask.onSuccess = function (task) {
         task.loadedMeshes.forEach(function (mesh) {
             meshes[mesh.id] = mesh;
         });
-        isVehicleReady = true;
+        isCarReady = true;
         isAllMeshReady();
     };
 
@@ -91,7 +90,7 @@ var createScene = function () {
 
 
     function isAllMeshReady() {
-        if (isRoadReady && isBotReady && isVehicleReady) {
+        if (isRoadReady && isBotReady && isCarReady) {
             renderScene();
         }
     }
@@ -140,7 +139,7 @@ var createScene = function () {
 
         var backgroundMeshes = [];
 
-        function createBackGroundView(name, material, width, height, rotation, position) {
+        function createBackgroundView(name, material, width, height, rotation, position) {
             var backgroundPlane = BABYLON.MeshBuilder.CreatePlane(name, {width: width, height: height}, scene);
             backgroundPlane.material = material;
             if (rotation !== 0) {
@@ -150,12 +149,12 @@ var createScene = function () {
             backgroundMeshes.push(backgroundPlane);
         }
 
-        createBackGroundView("bg_front", planeMaterialInverse, 1000, 200, new BABYLON.Vector3(0, -Math.PI / 2, 0), new BABYLON.Vector3(-groundSizeWidth / 2, 0, 0));
-        createBackGroundView("bg_back", planeMaterial, 1000, 200, new BABYLON.Vector3(0, Math.PI / 2, 0), new BABYLON.Vector3(groundSizeWidth / 2, 0, 0));
-        createBackGroundView("bg_right_a", planeMaterialInverse, 1500, 200, 0, new BABYLON.Vector3(groundSizeWidth / 4, 0, groundSizeHeight / 2));
-        createBackGroundView("bg_right_b", planeMaterial, 1500, 200, 0, new BABYLON.Vector3(-groundSizeWidth / 4, 0, groundSizeHeight / 2));
-        createBackGroundView("bg_left_a", planeMaterialInverse, 1500, 200, new BABYLON.Vector3(0, Math.PI, 0), new BABYLON.Vector3(groundSizeWidth / 4, 0, -groundSizeHeight / 2));
-        createBackGroundView("bg_left_b", planeMaterial, 1500, 200, new BABYLON.Vector3(0, Math.PI, 0), new BABYLON.Vector3(-groundSizeWidth / 4, 0, -groundSizeHeight / 2));
+        createBackgroundView("bg_front", planeMaterialInverse, 1000, 200, new BABYLON.Vector3(0, -Math.PI / 2, 0), new BABYLON.Vector3(-groundSizeWidth / 2, 0, 0));
+        createBackgroundView("bg_back", planeMaterial, 1000, 200, new BABYLON.Vector3(0, Math.PI / 2, 0), new BABYLON.Vector3(groundSizeWidth / 2, 0, 0));
+        createBackgroundView("bg_right_a", planeMaterialInverse, 1500, 200, 0, new BABYLON.Vector3(groundSizeWidth / 4, 0, groundSizeHeight / 2));
+        createBackgroundView("bg_right_b", planeMaterial, 1500, 200, 0, new BABYLON.Vector3(-groundSizeWidth / 4, 0, groundSizeHeight / 2));
+        createBackgroundView("bg_left_a", planeMaterialInverse, 1500, 200, new BABYLON.Vector3(0, Math.PI, 0), new BABYLON.Vector3(groundSizeWidth / 4, 0, -groundSizeHeight / 2));
+        createBackgroundView("bg_left_b", planeMaterial, 1500, 200, new BABYLON.Vector3(0, Math.PI, 0), new BABYLON.Vector3(-groundSizeWidth / 4, 0, -groundSizeHeight / 2));
 
         var landscape = BABYLON.Mesh.MergeMeshes(backgroundMeshes, true, true, undefined, false, true);
         landscape.position.y = 98;
@@ -192,11 +191,10 @@ var createScene = function () {
 
 
         /******* Trees ******/
-            //v ubuntu zakomentovat
         var spriteManagerTrees = new BABYLON.SpriteManager("treesManager", "textures/tree/tree.png", 300, {
-                width: 1024,
-                height: 914
-            }, scene);
+            width: 1024,
+            height: 914
+        }, scene);
 
         for (var i = 0; i < 200; i++) {
             var tree = new BABYLON.Sprite("tree", spriteManagerTrees);
@@ -231,23 +229,10 @@ var createScene = function () {
         var sumAngle = [];
         var turnInterval = [];
 
-        function createBots(mesh, distance, count) {
-            for (var i = 0; i < count; i++) {
-                var cloneBot = mesh.clone();
-                cloneBot.position.x = i * distance;
-                botVehicles[i] = cloneBot;
-                botVehiclesCorrection[i] = false;
-                sumAngle[i] = 0;
-                turnInterval[i] = 0;
-            }
-            mesh.setEnabled(false);
-        }
-
         function startBotMoving(botIndex) {
-
             if (botVehicles[botIndex].position.x > -roadWidth && botVehicles[botIndex].position.x < roadWidth && botVehicles[botIndex].position.z > 0) {
                 if (botVehiclesCorrection[botIndex] === true) {
-                    botVehicles[botIndex].rotate(BABYLON.Axis.Y, -(sumAngle[botIndex] + Math.PI), BABYLON.Space.LOCAL);
+                    botVehicles[botIndex].rotate(BABYLON.Axis.Y, -(sumAngle[botIndex] + 2*Math.PI), BABYLON.Space.LOCAL);
                     botVehicles[botIndex].position.x = roadWidth;
                     botVehicles[botIndex].position.z = roadHeight;
 
@@ -278,7 +263,6 @@ var createScene = function () {
                     botVehicles[botIndex].position.x = -roadWidth;
                     botVehicles[botIndex].position.z = -roadHeight;
 
-                    sumAngle[botIndex] = 0;
                     botVehiclesCorrection[botIndex] = false;
                 }
 
@@ -317,14 +301,25 @@ var createScene = function () {
         botLeftFrontWheel.position = new BABYLON.Vector3(-12.2, 0, -5);
         botLeftRareWheel.position = new BABYLON.Vector3(12.2, 0, -5);
 
-        botBody.position = new BABYLON.Vector3(-100, 0.5, 300);
+        botBody.position = new BABYLON.Vector3(0, 0.5, 300);
 
-        createBots(botBody, 100, 3);
+        for (var i = 0; i < botsStartPosition.length; i++) {
+            var cloneBot = botBody.clone();
+            cloneBot.position.x = botsStartPosition[i].x;
+            cloneBot.position.z = botsStartPosition[i].z;
+            cloneBot.rotation.y = botsStartPosition[i].r;
+
+            botVehicles[i] = cloneBot;
+            botVehiclesCorrection[i] = Math.abs(botsStartPosition[i].z) !== 300;
+            sumAngle[i] = botsStartPosition[i].r;
+            turnInterval[i] = 0;
+        }
+        botBody.setEnabled(false);
 
 
         /******* Car ******/
 
-            // Car Body
+        // Car Body
         var carBody = meshes["car"];
 
         camera.parent = carBody;
@@ -370,7 +365,9 @@ var createScene = function () {
 
         // Car centre of rotation
         var pivot = new BABYLON.Mesh("pivot", scene); //current centre of rotation
-        pivot.position.z = 372.5;
+        // pivot.position.z = 372.5;
+        pivot.position = new BABYLON.Vector3(carStartPosition.x, 0, carStartPosition.z + 50);
+        pivot.rotate(BABYLON.Axis.Y, carStartPosition.r, BABYLON.Space.WORLD);
         carBody.parent = pivot;
         carBody.position = new BABYLON.Vector3(0, 0, -50);
 
@@ -395,11 +392,14 @@ var createScene = function () {
                 }
                 switchCam = !switchCam;
             }
+            if (evt.sourceEvent.key === "u" || evt.sourceEvent.key === "U") {
+                saveCoord();
+            }
         }));
 
 
         /******* Text at the top of screen ******/
-            // ubuntu zle reagovalo na toto
+        // ubuntu zle reagovalo na toto
         var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
         var stackPanel = new BABYLON.GUI.StackPanel();
@@ -414,7 +414,6 @@ var createScene = function () {
         var fpsText = new BABYLON.GUI.TextBlock();
         fpsText.width = "200px";
         fpsText.color = "white";
-        fpsText.text = "Hello";
         fpsText.fontSize = 20;
         stackPanel.addControl(fpsText);
 
@@ -470,7 +469,7 @@ var createScene = function () {
         scene.registerBeforeRender(function () {
             F = engine.getFps();
 
-            // rotate skybox // v ubuntu koli zrychleniu zakomentovane
+            // rotate skybox
             skybox.rotate(BABYLON.Axis.Y, 0.0001, BABYLON.Space.LOCAL);
 
             // start moving bots on scene
@@ -611,7 +610,34 @@ var createScene = function () {
             fpsText.text = "FPS: " + F.toFixed(0);
             speedCarText.text = "Rýchlosť: " + Math.abs(D).toFixed(0) + " km/h";
         });
+
+        // Set values to graphs
+        var time = 0;
+
+        setInterval(function () {
+
+            var carPosition = wheelRI.getAbsolutePosition();
+            var carPositionX = Math.round(carPosition.x * 100) / 100;
+            var carPositionZ = (Math.round(carPosition.z * 100) / 100) + 2.8;
+
+            traceCarPosition(carPositionX, carPositionZ);
+            traceCarSpeed(D, time);
+            traceBotsPosition(botVehicles);
+            time += 200;
+
+        }, 200);
+
     }
 
     return scene;
 };
+
+// var scene = createScene();
+//
+// engine.runRenderLoop(function () {
+//     scene.render();
+// });
+//
+// window.addEventListener("resize", function () {
+//     engine.resize();
+// });

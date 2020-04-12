@@ -7,7 +7,45 @@ html, body {
 }
 
 #renderCanvas {
-    width: 100%;
+    width: 80%;
     height: 100%;
     touch-action: none;
+    float: left;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-justify {
+    text-align: justify;
+}
+
+.container {
+    text-align: center;
+}
+
+.row {
+    padding-bottom: 40px;
+}
+
+#graph {
+    width: 20%;
+    height: inherit;
+    margin-left: auto;
+    padding: 5px;
+    /*border-left: 1px solid #000000;*/
+}
+
+.graph-section {
+    width: auto;
+    height: 33%;
 }
