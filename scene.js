@@ -1,5 +1,5 @@
-var canvas = document.getElementById("renderCanvas");
-var engine = new BABYLON.Engine(canvas, true);
+// var canvas = document.getElementById("renderCanvas");
+// var engine = new BABYLON.Engine(canvas, true);
 
 var forwardVector;
 var rightVector;
@@ -229,22 +229,10 @@ var createScene = function () {
         var sumAngle = [];
         var turnInterval = [];
 
-        // function createBots(mesh) {
-        //     for (var i = 0; i < count; i++) {
-        //         var cloneBot = mesh.clone();
-        //         cloneBot.position.x = i * distance;
-        //         botVehicles[i] = cloneBot;
-        //         botVehiclesCorrection[i] = false;
-        //         sumAngle[i] = 0;
-        //         turnInterval[i] = 0;
-        //     }
-        //     mesh.setEnabled(false);
-        // }
-
         function startBotMoving(botIndex) {
             if (botVehicles[botIndex].position.x > -roadWidth && botVehicles[botIndex].position.x < roadWidth && botVehicles[botIndex].position.z > 0) {
                 if (botVehiclesCorrection[botIndex] === true) {
-                    botVehicles[botIndex].rotate(BABYLON.Axis.Y, -(sumAngle[botIndex] + Math.PI), BABYLON.Space.LOCAL);
+                    botVehicles[botIndex].rotate(BABYLON.Axis.Y, -(sumAngle[botIndex] + 2*Math.PI), BABYLON.Space.LOCAL);
                     botVehicles[botIndex].position.x = roadWidth;
                     botVehicles[botIndex].position.z = roadHeight;
 
@@ -275,7 +263,6 @@ var createScene = function () {
                     botVehicles[botIndex].position.x = -roadWidth;
                     botVehicles[botIndex].position.z = -roadHeight;
 
-                    sumAngle[botIndex] = 0;
                     botVehiclesCorrection[botIndex] = false;
                 }
 
@@ -316,7 +303,6 @@ var createScene = function () {
 
         botBody.position = new BABYLON.Vector3(0, 0.5, 300);
 
-        // createBots(botBody);
         for (var i = 0; i < botsStartPosition.length; i++) {
             var cloneBot = botBody.clone();
             cloneBot.position.x = botsStartPosition[i].x;
@@ -325,20 +311,15 @@ var createScene = function () {
 
             botVehicles[i] = cloneBot;
             botVehiclesCorrection[i] = Math.abs(botsStartPosition[i].z) !== 300;
-            sumAngle[i] = Math.abs(botsStartPosition[i].z) !== 300 ? botsStartPosition[i].r : 0;
+            sumAngle[i] = botsStartPosition[i].r;
             turnInterval[i] = 0;
-
-            // console.log(botVehicles[i]);
-            // console.log(botVehiclesCorrection[i]);
-            // console.log(sumAngle[i]);
-            // console.log(turnInterval[i]);
         }
         botBody.setEnabled(false);
 
 
         /******* Car ******/
 
-            // Car Body
+        // Car Body
         var carBody = meshes["car"];
 
         camera.parent = carBody;
@@ -433,7 +414,6 @@ var createScene = function () {
         var fpsText = new BABYLON.GUI.TextBlock();
         fpsText.width = "200px";
         fpsText.color = "white";
-        fpsText.text = "Hello";
         fpsText.fontSize = 20;
         stackPanel.addControl(fpsText);
 
@@ -652,12 +632,12 @@ var createScene = function () {
     return scene;
 };
 
-var scene = createScene();
-
-engine.runRenderLoop(function () {
-    scene.render();
-});
-
-window.addEventListener("resize", function () {
-    engine.resize();
-});
+// var scene = createScene();
+//
+// engine.runRenderLoop(function () {
+//     scene.render();
+// });
+//
+// window.addEventListener("resize", function () {
+//     engine.resize();
+// });

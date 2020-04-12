@@ -42,7 +42,7 @@ html, body {
     height: inherit;
     margin-left: auto;
     padding: 5px;
-    border-left: 1px solid #000000;
+    /*border-left: 1px solid #000000;*/
 }
 
 .graph-section {

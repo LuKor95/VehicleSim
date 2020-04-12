@@ -1,22 +1,8 @@
-// var canvas = document.getElementById("renderCanvas");
-// var startButton = document.getElementById("startButton");
-// var mainContent = document.getElementById("mainContent");
-//
-// var engine = new BABYLON.Engine(canvas, true);
-//
-// startButton.onclick = function () {
-//     mainContent.classList.add("d-none");
-//
-//     var scene = createScene();
-//
-//     engine.runRenderLoop(function () {
-//         scene.render();
-//     });
-//
-//     window.addEventListener("resize", function () {
-//         engine.resize();
-//     });
-// };
+var canvas = document.getElementById("renderCanvas");
+var startButton = document.getElementById("startButton");
+var mainContent = document.getElementById("mainContent");
+
+var engine = new BABYLON.Engine(canvas, true);
 
 carPlot = document.getElementById('carPosition');
 botPlot = document.getElementById('botPosition');
@@ -163,3 +149,17 @@ function traceCarSpeed(speed, time) {
 
     Plotly.newPlot(speedPlot, [carSpeed], carSpeedPlotLayout);
 }
+
+startButton.onclick = function () {
+    mainContent.classList.add("d-none");
+
+    var scene = createScene();
+
+    engine.runRenderLoop(function () {
+        scene.render();
+    });
+
+    window.addEventListener("resize", function () {
+        engine.resize();
+    });
+};
