@@ -23,7 +23,10 @@ var speedCoords = [];
 var carTrace = {
     x: [],
     y: [],
-    mode: 'lines'
+    mode: 'lines',
+    line: {
+        width: 3
+    }
 };
 
 var carSpeed = {
@@ -35,7 +38,7 @@ var carSpeed = {
 var carPlotLayout = {
     title: "Pohyb auta po mape",
     xaxis: {
-        range: [-15, 15]
+        range: [-20, 20]
     },
     yaxis: {
         range: [-4, 4]
@@ -44,19 +47,19 @@ var carPlotLayout = {
 };
 
 var carSpeedPlotLayout = {
-    title: "Závislosť rýchloti od času",
-    margin: {t: 25, l: 20, r: 10}
+    title: "Závislosť rýchlosti od času",
+    margin: {t: 25, l: 25, r: 10}
 };
 
 var botPlotLayout = {
     title: "Pohyb autobusov po mape",
     xaxis: {
-        range: [-15, 15]
+        range: [-20, 20]
     },
     yaxis: {
         range: [-4, 4]
     },
-    margin: {t: 25, l: 20, r: 10}
+    margin: {t: 25, l: 25, r: 10}
 };
 
 
@@ -129,7 +132,11 @@ function traceBotsPosition(bots) {
         var botTrace = {
             x: [bots[i].position.x / 100],
             y: [bots[i].position.z / 100],
-            mode: 'markers'
+            mode: 'markers',
+            name: 'bus '+(i+1),
+            marker: {
+                size: 12
+            }
         };
         botsTrace.push(botTrace);
 
