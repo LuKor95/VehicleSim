@@ -7,7 +7,94 @@ html, body {
 }
 
 #renderCanvas {
-    width: 100%;
+    width: 80%;
     height: 100%;
     touch-action: none;
+    float: left;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-justify {
+    text-align: justify;
+}
+
+.warning {
+    color: #8B0000;
+    font-size: 32px;
+}
+
+.mobile {
+    display: none;
+}
+
+.desktop {
+    display: block;
+}
+
+#mainContent {
+    font-family: Arial, sans-serif;
+    height: 100%;
+}
+
+.container {
+    text-align: center;
+    padding-bottom: 40px;
+}
+
+#graph {
+    width: 20%;
+    height: inherit;
+    margin-left: auto;
+    padding: 5px;
+    /*border-left: 1px solid #000000;*/
+}
+
+.graph-section {
+    width: auto;
+    height: 33%;
+}
+
+.btn {
+    background-color: #ffffff;
+    color: #8B0000;
+    border: 1px solid #8B0000;
+    font-size: 24px;
+    font-weight: bold;
+    padding: 10px 20px 10px 20px;
+}
+
+.btn:hover{
+    cursor: pointer;
+    background-color: #8B0000;
+    color: #ffffff;
+    border: 1px solid transparent;
+}
+
+.table-centered {
+    margin: auto;
+}
+
+.table-centered td {
+    padding: 0 20px 0 20px;
+}
+
+@media screen and (max-width: 1023px) {
+    .mobile {
+        display: block;
+    }
+
+    .desktop {
+        display: none;
+    }
 }

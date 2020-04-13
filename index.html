@@ -1,28 +1,174 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sk">
 <head>
     <meta charset="UTF-8">
-    <title>CarSim</title>
+    <meta name="author" content="Lukas Korciciak">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interakcia s 3D modelom prostredníctvom externých periférií</title>
 
+    <link rel="stylesheet" type="text/css" href="bootstrap/bootstrap-grid.min.css">
     <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="icon" type="image/png" href="favicon.png">
 
-<!--    <script src="babylon/babylon.js"></script>-->
-<!--    <script src="babylon/babylonjs.loaders.min.js"></script>-->
+    <script src="babylon/babylon.js"></script>
+    <script src="babylon/babylonjs.loaders.min.js"></script>
+    <script src="babylon/babylon.gui.min.js"></script>
+    <script src="graph/plotly-latest.min.js"></script>
 
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
-    <script src="https://cdn.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
-    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
-    <script src="https://cdn.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
-    <script src="https://cdn.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
+    <!--    <script src="https://cdn.babylonjs.com/babylon.js"></script>-->
+    <!--    <script src="https://cdn.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>-->
+    <!--    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>-->
+    <!--    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>-->
+    <!--    <script src="https://cdn.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>-->
+    <!--    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>-->
+    <!--    <script src="https://cdn.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>-->
+    <!--    <script src="https://cdn.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>-->
+    <!--    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>-->
 
-    <script src="babylon/pep.js"></script>
 </head>
 <body>
-<!--<button id="stlac">stac to</button>-->
+<div id="mainContent">
+    <div class="mobile">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <p class="warning">Upozornenie! 3D model nie je podporovaný na mobilných zariadeniach</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="desktop">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h1>Interakcia s 3D modelom prostredníctvom externých periférií</h1>
+                </div>
+                <div class="col-12">
+                    <h2>Diplomová práca</h2>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h2>Ovládanie</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <h3>Klávesnica</h3>
+                    <table class="table-centered">
+                        <tbody>
+                            <tr>
+                                <td>W</td>
+                                <td>Dopredu</td>
+                            </tr>
+                            <tr>
+                                <td>A</td>
+                                <td>Doľava</td>
+                            </tr>
+                            <tr>
+                                <td>S</td>
+                                <td>Dozadu</td>
+                            </tr>
+                            <tr>
+                                <td>D</td>
+                                <td>Doprava</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-4">
+                    <h3>Joystick</h3>
+                    <table class="table-centered">
+                        <tbody>
+                        <tr>
+                            <td>Os X</td>
+                            <td>Doľava / Doprava</td>
+                        </tr>
+                        <tr>
+                            <td>Os Y</td>
+                            <td>Dopredu / Dozadu / Brzda</td>
+                        </tr>
+                        <tr>
+                            <td>Slider</td>
+                            <td>Prevod dopredu / dozadu</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-4">
+                    <h3>Volant s pedálmi</h3>
+                    <table class="table-centered">
+                        <tbody>
+                        <tr>
+                            <td>Volant</td>
+                            <td>Doľava / Doprava</td>
+                        </tr>
+                        <tr>
+                            <td>Plynový pedál</td>
+                            <td>Dopredu / Dozadu</td>
+                        </tr>
+                        <tr>
+                            <td>Brzdový pedál</td>
+                            <td>Brzda</td>
+                        </tr>
+                        <tr>
+                            <td>Ľavé pádlo</td>
+                            <td>Prevod dozadu</td>
+                        </tr>
+                        <tr>
+                            <td>Pravé pádlo</td>
+                            <td>Prevod dopredu</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row pb-5">
+                <div class="col-12">
+                    <h3>Ďalšie prvky</h3>
+                    <table class="table-centered">
+                        <tbody>
+                        <tr>
+                            <td>V</td>
+                            <td>Zmena kamery</td>
+                        </tr>
+                        <tr>
+                            <td>U</td>
+                            <td>Uloženie dát</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <button id="startButton" class="btn">Spustiť 3D model</button>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-5">
+                    <p>Autor:<br>Bc. Lukáš Korčičiak</p>
+                </div>
+                <div class="col-md-2">
+                    <p>2020</p>
+                </div>
+                <div class="col-md-5">
+                    <p>Vedúca práce:<br>doc. Ing. Katarína Žáková, PhD.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <canvas id="renderCanvas" touch-action="none"></canvas>
+<div id="graph">
+    <div id="carPosition" class="graph-section"></div>
+    <div id="carSpeed" class="graph-section"></div>
+    <div id="botPosition" class="graph-section"></div>
+</div>
 
 <script src="script.js"></script>
 <script src="gamepad.js"></script>
