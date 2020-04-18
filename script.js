@@ -26,7 +26,8 @@ var carTrace = {
     mode: 'lines',
     line: {
         width: 3
-    }
+    },
+    showlegend: false
 };
 
 var carSpeed = {
@@ -35,13 +36,63 @@ var carSpeed = {
     mode: 'lines'
 };
 
+var path1 = {
+    x: [-11, 11],
+    y: [3, 3],
+    mode: 'lines',
+    line: {
+        shape: 'linear',
+        width: 0.5,
+        color: 'rgb(0,0,0)'},
+    type: 'scatter',
+    showlegend: false
+};
+
+var path2 = {
+    x: [-11, -12.628, -12.99, -12.628, -11],
+    y: [3, 1.435, 0.056, -1.435, -3],
+    mode: 'lines',
+    name: 'spline',
+    line: {
+        shape: 'spline',
+        width: 0.5,
+        color: 'rgb(0, 0, 0)'},
+    type: 'scatter',
+    showlegend: false
+};
+
+var path3 = {
+    x: [-11, 11],
+    y: [-3, -3],
+    mode: 'lines',
+    line: {
+        shape: 'linear',
+        width: 0.5,
+        color: 'rgb(0, 0, 0)'},
+    type: 'scatter',
+    showlegend: false
+};
+
+var path4 = {
+    x: [11, 12.628, 12.99, 12.628, 11],
+    y: [-3, -1.435, -0.056, 1.435, 3],
+    mode: 'lines',
+    name: 'spline',
+    line: {
+        shape: 'spline',
+        width: 0.5,
+        color: 'rgb(0, 0, 0)'},
+    type: 'scatter',
+    showlegend: false
+};
+
 var carPlotLayout = {
     title: "Pohyb auta po mape",
     xaxis: {
-        range: [-20, 20]
+        range: [-15, 15]
     },
     yaxis: {
-        range: [-4, 4]
+        range: [-5, 5]
     },
     margin: {t: 25, l: 20, r: 10}
 };
@@ -54,10 +105,10 @@ var carSpeedPlotLayout = {
 var botPlotLayout = {
     title: "Pohyb autobusov po mape",
     xaxis: {
-        range: [-20, 20]
+        range: [-15, 15]
     },
     yaxis: {
-        range: [-4, 4]
+        range: [-5, 5]
     },
     margin: {t: 25, l: 25, r: 10}
 };
@@ -120,12 +171,12 @@ function traceCarPosition(posX, posZ) {
         var coord = {x: pX * 100, z: pZ * 100};
         carCoords.push(coord);
 
-        Plotly.newPlot(carPlot, [carTrace], carPlotLayout);
+        Plotly.newPlot(carPlot, [carTrace, path1, path2, path3, path4], carPlotLayout);
     }
 }
 
 function traceBotsPosition(bots) {
-    var botsTrace = [];
+    var botsTrace = [path1, path2, path3, path4];
 
     for (var i = 0; i < bots.length; i++) {
 

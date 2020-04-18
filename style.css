@@ -83,6 +83,7 @@ html, body {
 
 .table-centered {
     margin: auto;
+    border: 1px solid #000000;
 }
 
 .table-centered td {
