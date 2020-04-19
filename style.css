@@ -13,25 +13,9 @@ html, body {
     float: left;
 }
 
-.text-left {
-    text-align: left;
-}
-
-.text-right {
-    text-align: right;
-}
-
-.text-center {
-    text-align: center;
-}
-
-.text-justify {
-    text-align: justify;
-}
-
 .warning {
     color: #8B0000;
-    font-size: 32px;
+    font-size: 24px;
 }
 
 .mobile {
@@ -57,7 +41,6 @@ html, body {
     height: inherit;
     margin-left: auto;
     padding: 5px;
-    /*border-left: 1px solid #000000;*/
 }
 
 .graph-section {
@@ -66,12 +49,13 @@ html, body {
 }
 
 .btn {
-    background-color: #ffffff;
+    background-color: transparent;
     color: #8B0000;
     border: 1px solid #8B0000;
     font-size: 24px;
     font-weight: bold;
     padding: 10px 20px 10px 20px;
+    border-radius: 5px;
 }
 
 .btn:hover{
@@ -84,10 +68,15 @@ html, body {
 .table-centered {
     margin: auto;
     border: 1px solid #000000;
+    border-radius: 5px;
+}
+
+.text-red {
+    color: #8B0000;
 }
 
 .table-centered td {
-    padding: 0 20px 0 20px;
+    padding: 5px 15px 5px 15px;
 }
 
 @media screen and (max-width: 1023px) {
