@@ -1,5 +1,5 @@
-// var canvas = document.getElementById("renderCanvas");
-// var engine = new BABYLON.Engine(canvas, true);
+var canvas = document.getElementById("renderCanvas");
+var engine = new BABYLON.Engine(canvas, true);
 
 var forwardVector;
 var rightVector;
@@ -471,6 +471,11 @@ var createScene = function () {
         scene.registerBeforeRender(function () {
             F = engine.getFps();
 
+            if (stopRender) {
+                clearInterval(timer);
+                engine.stopRenderLoop();
+            }
+
             // rotate skybox
             skybox.rotate(BABYLON.Axis.Y, 0.0001, BABYLON.Space.LOCAL);
 
@@ -601,7 +606,7 @@ var createScene = function () {
         // Set values to graphs
         var time = 0;
 
-        setInterval(function () {
+        var timer = setInterval(function () {
 
             var carPosition = wheelRL.getAbsolutePosition();
             var carPositionX = Math.round(carPosition.x * 100) / 100;
@@ -619,12 +624,12 @@ var createScene = function () {
     return scene;
 };
 
-// var scene = createScene();
-//
-// engine.runRenderLoop(function () {
-//     scene.render();
-// });
-//
-// window.addEventListener("resize", function () {
-//     engine.resize();
-// });
+var scene = createScene();
+
+engine.runRenderLoop(function () {
+    scene.render();
+});
+
+window.addEventListener("resize", function () {
+    engine.resize();
+});

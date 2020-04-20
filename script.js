@@ -1,12 +1,14 @@
-var canvas = document.getElementById("renderCanvas");
-var startButton = document.getElementById("startButton");
-var mainContent = document.getElementById("mainContent");
+// var canvas = document.getElementById("renderCanvas");
+// var startButton = document.getElementById("startButton");
+// var mainContent = document.getElementById("mainContent");
 
-var engine = new BABYLON.Engine(canvas, true);
+// var engine = new BABYLON.Engine(canvas, true);
+var stopRender = false;
 
 carPlot = document.getElementById('carPosition');
 botPlot = document.getElementById('botPosition');
 speedPlot = document.getElementById('carSpeed');
+stopModel = document.getElementById('stopModel');
 
 var carStartPosition = {x: 0, z: 322.5, r: 0};
 
@@ -87,7 +89,6 @@ var path4 = {
 };
 
 var carPlotLayout = {
-    title: "Pohyb auta po mape",
     xaxis: {
         range: [-15, 15]
     },
@@ -98,12 +99,10 @@ var carPlotLayout = {
 };
 
 var carSpeedPlotLayout = {
-    title: "Závislosť rýchlosti od času",
     margin: {t: 25, l: 25, r: 10}
 };
 
 var botPlotLayout = {
-    title: "Pohyb autobusov po mape",
     xaxis: {
         range: [-15, 15]
     },
@@ -111,6 +110,10 @@ var botPlotLayout = {
         range: [-5, 5]
     },
     margin: {t: 25, l: 25, r: 10}
+};
+
+stopModel.onclick = function stopRenderLoop() {
+    stopRender = true;
 };
 
 
@@ -176,7 +179,19 @@ function traceCarPosition(posX, posZ) {
 }
 
 function traceBotsPosition(bots) {
-    var botsTrace = [path1, path2, path3, path4];
+    var carPosition = carCoords[carCoords.length - 1];
+
+    var car =  {
+        x: [carPosition.x / 100],
+        y: [carPosition.z / 100],
+        mode: 'markers',
+        name: 'car',
+        marker: {
+            size: 12
+        }
+    };
+
+    var botsTrace = [car, path1, path2, path3, path4];
 
     for (var i = 0; i < bots.length; i++) {
 
@@ -208,16 +223,16 @@ function traceCarSpeed(speed, time) {
     Plotly.newPlot(speedPlot, [carSpeed], carSpeedPlotLayout);
 }
 
-startButton.onclick = function () {
-    mainContent.classList.add("d-none");
-
-    var scene = createScene();
-
-    engine.runRenderLoop(function () {
-        scene.render();
-    });
-
-    window.addEventListener("resize", function () {
-        engine.resize();
-    });
-};
+// startButton.onclick = function () {
+//     // mainContent.classList.add("d-none");
+//
+//     var scene = createScene();
+//
+//     engine.runRenderLoop(function () {
+//         scene.render();
+//     });
+//
+//     window.addEventListener("resize", function () {
+//         engine.resize();
+//     });
+// };
