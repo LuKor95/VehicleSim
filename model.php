@@ -2,14 +2,14 @@
 include "config.php";
 ?>
 <!DOCTYPE html>
-<html lang="<?= $lang['title']?>">
+<html lang="<?= $lang['lang']?>">
 <head>
     <meta charset="UTF-8">
     <meta name="author" content="Lukas Korciciak">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D model</title>
+    <title><?= $lang['model']?> | Simulation of Vehicle</title>
 
-    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/model.css">
     <link rel="icon" type="image/png" href="favicon.png">
 
@@ -23,7 +23,7 @@ include "config.php";
 <div id="graph">
     <div class="menu-section">
         <a href="/" class="btn btn-dark"><?= $lang['home']?></a>
-        <a href="/reference.php" class="btn btn-dark"><?= $lang['reference']?></a>
+        <a href="/record.php" class="btn btn-dark"><?= $lang['record']?></a>
         <a href="javascript:void(0)" id="stopModel" class="btn btn-dark"><?= $lang['stop']?></a>
     </div>
     <?= $lang['graph1'] ?>
@@ -33,7 +33,9 @@ include "config.php";
     <?= $lang['graph3'] ?>
     <div id="botPosition" class="graph-section"></div>
     <div class="lang-section">
-        <a href="/model.php?lang=en"><?= $lang['lang_en']?></a> | <a href="/model.php?lang=sk"><?= $lang['lang_sk']?></a>
+        <a href="/model.php?lang=en"><img src="img/en.png" class="img-fluid pr-3" alt="EN"></a>
+        <a href="/model.php?lang=sk"><img src="img/sk.png" class="img-fluid" alt="SK"></a>
+<!--        <a href="/model.php?lang=en" class="btn-link text-dark">--><?//= $lang['lang_en']?><!--</a> | <a href="/model.php?lang=sk" class="btn-link text-dark">--><?//= $lang['lang_sk']?><!--</a>-->
     </div>
 </div>
 

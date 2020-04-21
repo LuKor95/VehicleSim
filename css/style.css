@@ -1,47 +1,26 @@
-html, body {
+.bg-custom {
+    position: relative;
+}
+
+.bg-custom:after {
+    content: '';
+    background: #fff url('../img/sunset-mountains.jpg') no-repeat top;
+    background-size: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    margin: 0;
-    padding: 0;
+    z-index: -1;
+    opacity: 0.5;
 }
 
-#mainContent {
-    /*font-family: Arial, sans-serif;*/
-    height: 100%;
+.bg-transparent-9 {
+    background: rgba(52, 58, 64, 0.9);
 }
 
-.container {
-    text-align: center;
-    padding-bottom: 40px;
-}
-
-.btn {
-    background-color: transparent;
-    color: #8B0000;
-    border: 1px solid #8B0000;
-    font-size: 24px;
-    font-weight: bold;
-    padding: 10px 20px 10px 20px;
-    border-radius: 5px;
-}
-
-.btn:hover{
-    cursor: pointer;
-    background-color: #8B0000;
-    color: #ffffff;
-    border: 1px solid transparent;
-}
-
-.table-centered {
-    margin: auto;
-    border: 1px solid #000000;
-    border-radius: 5px;
-}
-
-.text-red {
-    color: #8B0000;
-}
-
-.table-centered td {
-    padding: 5px 15px 5px 15px;
+@media only screen and (max-width: 425px) {
+    .display-4 {
+        font-size: 2rem;
+    }
 }
