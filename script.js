@@ -1,8 +1,3 @@
-// var canvas = document.getElementById("renderCanvas");
-// var startButton = document.getElementById("startButton");
-// var mainContent = document.getElementById("mainContent");
-
-// var engine = new BABYLON.Engine(canvas, true);
 var stopRender = false;
 
 carPlot = document.getElementById('carPosition');
@@ -146,8 +141,11 @@ getStartCoord(function (data) {
 
 function saveCoord() {
     var car = carCoords;
-    var carSpeed = speedCoords;
-    var data = JSON.stringify({car, carSpeed});
+    var speed = speedCoords;
+    var graphCar = carTrace;
+    var graphSpeed = carSpeed;
+
+    var data = JSON.stringify({car, speed, graphCar, graphSpeed});
 
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function () {
@@ -222,17 +220,3 @@ function traceCarSpeed(speed, time) {
 
     Plotly.newPlot(speedPlot, [carSpeed], carSpeedPlotLayout);
 }
-
-// startButton.onclick = function () {
-//     // mainContent.classList.add("d-none");
-//
-//     var scene = createScene();
-//
-//     engine.runRenderLoop(function () {
-//         scene.render();
-//     });
-//
-//     window.addEventListener("resize", function () {
-//         engine.resize();
-//     });
-// };

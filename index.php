@@ -24,14 +24,14 @@ include "config.php";
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item active">
+                <li class="nav-item">
                     <a class="nav-link" href="/"><?= $lang['home'] ?></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/record.php"><?= $lang['record'] ?></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/model.php"><?= $lang['start'] ?></a>
+                    <a class="nav-link text-danger font-weight-bold" href="/model.php"><?= $lang['start'] ?></a>
                 </li>
             </ul>
         </div>

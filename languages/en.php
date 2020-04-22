@@ -9,6 +9,7 @@ $lang = [
     "type" => "Master thesis",
     "home" => "Home",
     "record" => "Records",
+    "recordsub" => "The following tables show all previous records that were saved in the 3D model.",
     "model" => "3D model",
     "stop" => "Stop",
     "start" => "Run 3D model",

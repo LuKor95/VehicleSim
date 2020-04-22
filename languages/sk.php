@@ -9,6 +9,7 @@ $lang = [
     "type" => "Diplomová práca",
     "home" => "Domov",
     "record" => "Záznamy",
+    "recordsub" => "Nasledujúce tabuľky zobrazujú všetky predošlé zaznamy, ktoré sa uložili v 3D modeli.",
     "model" => "3D model",
     "stop" => "Zastaviť",
     "start" => "Spustiť 3D model",
