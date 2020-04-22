@@ -5,14 +5,23 @@ $requestData = file_get_contents("php://input");
 
 if ($requestData) {
     $objectData = json_decode($requestData, true);
-    $car = $objectData["car"];
-    $carSpeed = $objectData["carSpeed"];
 
-    $time = date('YmdHis');
+    $time = date('d-m-Y_H-i-s');
 
-    $fileName = "CAR_" . $time . ".json";
-    file_put_contents('coordinates/output_coords/' . $fileName, json_encode($car));
+    $coord = [
+        "time" => $time,
+        "car" => $objectData["car"],
+        "speed" => $objectData["speed"]
+    ];
+    $graph = [
+        "time" => $time,
+        "car" => $objectData["graphCar"],
+        "speed" => $objectData["graphSpeed"]
+    ];
 
-    $fileName = "CAR_SPEED_" . $time . ".json";
-    file_put_contents('coordinates/output_coords/' . $fileName, json_encode($carSpeed));
+    $fileName = "COORD_" . $time . ".json";
+    file_put_contents('coordinates/output_coords/' . $fileName, json_encode($coord));
+
+    $fileName = "GRAPH_" . $time . ".json";
+    file_put_contents('coordinates/output_coords/' . $fileName, json_encode($graph));
 }
