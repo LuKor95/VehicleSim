@@ -9,6 +9,5 @@ else if (isset($_GET['lang']) && $_SESSION['lang'] != $_GET['lang'] && !empty($_
     else if ($_GET['lang'] == "sk")
         $_SESSION['lang'] = "sk";
 }
-//echo "lang: ". $_SESSION['lang'];
 require_once "languages/" . $_SESSION['lang'] . ".php";
 ?>

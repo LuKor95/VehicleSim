@@ -35,7 +35,6 @@ include "config.php";
     <div class="lang-section">
         <a href="/model.php?lang=en"><img src="img/en.png" class="img-fluid pr-3" alt="EN"></a>
         <a href="/model.php?lang=sk"><img src="img/sk.png" class="img-fluid" alt="SK"></a>
-<!--        <a href="/model.php?lang=en" class="btn-link text-dark">--><?//= $lang['lang_en']?><!--</a> | <a href="/model.php?lang=sk" class="btn-link text-dark">--><?//= $lang['lang_sk']?><!--</a>-->
     </div>
 </div>
 
