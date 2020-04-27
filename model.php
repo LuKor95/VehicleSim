@@ -25,6 +25,7 @@ include "config.php";
         <a href="/" class="btn btn-dark"><?= $lang['home']?></a>
         <a href="/record.php" class="btn btn-dark"><?= $lang['record']?></a>
         <a href="javascript:void(0)" id="stopModel" class="btn btn-dark"><?= $lang['stop']?></a>
+        <a href="javascript:void(0)" id="restartModel" class="btn btn-dark d-none"><?= $lang['restart']?></a>
     </div>
     <?= $lang['graph1'] ?>
     <div id="carPosition" class="graph-section"></div>

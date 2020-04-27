@@ -4,6 +4,7 @@ carPlot = document.getElementById('carPosition');
 botPlot = document.getElementById('botPosition');
 speedPlot = document.getElementById('carSpeed');
 stopModel = document.getElementById('stopModel');
+restartModel = document.getElementById('restartModel');
 
 var carStartPosition = {x: 0, z: 322.5, r: 0};
 
@@ -109,8 +110,13 @@ var botPlotLayout = {
 
 stopModel.onclick = function stopRenderLoop() {
     stopRender = true;
+    stopModel.classList.add("d-none");
+    restartModel.classList.remove("d-none");
 };
 
+restartModel.onclick = function () {
+    location.reload();
+};
 
 /******* Get input coordinates from json ******/
 

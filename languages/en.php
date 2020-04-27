@@ -13,6 +13,7 @@ $lang = [
     "model" => "3D model",
     "stop" => "Stop",
     "start" => "Run 3D model",
+    "restart" => "Restart",
     "title2" => "3D model control",
     "title2a" => "Keyboard",
     "title2b" => "Joystick",
