@@ -22,8 +22,8 @@ include "config.php";
 <canvas id="renderCanvas" touch-action="none"></canvas>
 <div id="graph">
     <div class="menu-section">
-        <a href="/" class="btn btn-dark"><?= $lang['home']?></a>
-        <a href="/record.php" class="btn btn-dark"><?= $lang['record']?></a>
+        <a href="index.php" class="btn btn-dark"><?= $lang['home']?></a>
+        <a href="record.php" class="btn btn-dark"><?= $lang['record']?></a>
         <a href="javascript:void(0)" id="stopModel" class="btn btn-dark"><?= $lang['stop']?></a>
         <a href="javascript:void(0)" id="restartModel" class="btn btn-dark d-none"><?= $lang['restart']?></a>
     </div>
@@ -34,8 +34,8 @@ include "config.php";
     <?= $lang['graph3'] ?>
     <div id="botPosition" class="graph-section"></div>
     <div class="lang-section">
-        <a href="/model.php?lang=en"><img src="img/en.png" class="img-fluid pr-3" alt="EN"></a>
-        <a href="/model.php?lang=sk"><img src="img/sk.png" class="img-fluid" alt="SK"></a>
+        <a href="model.php?lang=en"><img src="img/en.png" class="img-fluid pr-3" alt="EN"></a>
+        <a href="model.php?lang=sk"><img src="img/sk.png" class="img-fluid" alt="SK"></a>
     </div>
 </div>
 

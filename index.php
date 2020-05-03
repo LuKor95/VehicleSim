@@ -17,7 +17,7 @@ include "config.php";
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-transparent-9 fixed-top">
     <div class="container">
-        <a class="navbar-brand" href="/">Simulation of Vehicle</a>
+        <a class="navbar-brand" href="index.php">Simulation of Vehicle</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
                 aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -25,13 +25,13 @@ include "config.php";
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="/"><?= $lang['home'] ?></a>
+                    <a class="nav-link" href="index.php"><?= $lang['home'] ?></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/record.php"><?= $lang['record'] ?></a>
+                    <a class="nav-link" href="record.php"><?= $lang['record'] ?></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-danger font-weight-bold" href="/model.php"><?= $lang['start'] ?></a>
+                    <a class="nav-link text-danger font-weight-bold" href="model.php"><?= $lang['start'] ?></a>
                 </li>
             </ul>
         </div>
@@ -175,7 +175,7 @@ include "config.php";
 <div class="container">
     <div class="row">
         <div class="col-12 text-center pb-5">
-            <a href="/model.php" id="startButton" class="btn btn-danger"><span
+            <a href="model.php" id="startButton" class="btn btn-danger"><span
                         class="h1"><?= $lang['start'] ?></span></a>
         </div>
     </div>
@@ -195,8 +195,8 @@ include "config.php";
             </div>
             <div class="col-md-4">
                 <div class="pb-3">
-                    <a href="/index.php?lang=en"><img src="img/en.png" class="img-fluid pr-3" alt="EN"></a>
-                    <a href="/index.php?lang=sk"><img src="img/sk.png" class="img-fluid" alt="SK"></a>
+                    <a href="index.php?lang=en"><img src="img/en.png" class="img-fluid pr-3" alt="EN"></a>
+                    <a href="index.php?lang=sk"><img src="img/sk.png" class="img-fluid" alt="SK"></a>
                 </div>
                 <p>Copyright &copy; Simulation of Vehicle 2020</p>
             </div>
