@@ -91,11 +91,11 @@ var carPlotLayout = {
     yaxis: {
         range: [-5, 5]
     },
-    margin: {t: 25, l: 20, r: 10}
+    margin: {t: 25, l: 20, r: 10, b: 25}
 };
 
 var carSpeedPlotLayout = {
-    margin: {t: 25, l: 25, r: 10}
+    margin: {t: 25, l: 25, r: 10, b: 25}
 };
 
 var botPlotLayout = {
@@ -105,7 +105,7 @@ var botPlotLayout = {
     yaxis: {
         range: [-5, 5]
     },
-    margin: {t: 25, l: 25, r: 10}
+    margin: {t: 25, l: 25, r: 10, b: 25}
 };
 
 stopModel.onclick = function stopRenderLoop() {

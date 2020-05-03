@@ -9,14 +9,14 @@ include "config.php";
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $lang['model']?> | Simulation of Vehicle</title>
 
-    <link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="lib/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/model.css">
     <link rel="icon" type="image/png" href="favicon.png">
 
-    <script src="babylon/babylon.js"></script>
-    <script src="babylon/babylonjs.loaders.min.js"></script>
-    <script src="babylon/babylon.gui.min.js"></script>
-    <script src="graph/plotly-latest.min.js"></script>
+    <script src="lib/babylon/babylon.js"></script>
+    <script src="lib/babylon/babylonjs.loaders.min.js"></script>
+    <script src="lib/babylon/babylon.gui.min.js"></script>
+    <script src="lib/graph/plotly-latest.min.js"></script>
 </head>
 <body>
 <canvas id="renderCanvas" touch-action="none"></canvas>

@@ -9,11 +9,11 @@ include "config.php";
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $lang['record'] ?> | Simulation of Vehicle</title>
 
-    <link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="lib/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <link rel="icon" type="image/png" href="favicon.png">
 
-    <script src="graph/plotly-latest.min.js"></script>
+    <script src="lib/graph/plotly-latest.min.js"></script>
 
 </head>
 <body>
@@ -81,8 +81,8 @@ include "config.php";
     </div>
 </footer>
 
-<script src="vendor/jquery/jquery.min.js"></script>
-<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="lib/jquery/jquery.min.js"></script>
+<script src="lib/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="record.js"></script>
 
 </body>
