@@ -6,7 +6,7 @@ $requestData = file_get_contents("php://input");
 if ($requestData) {
     $objectData = json_decode($requestData, true);
 
-    $time = date('d-m-Y_H-i-s');
+    $time = date('Y-m-d_H-i-s');
 
     $coord = [
         "time" => $time,
