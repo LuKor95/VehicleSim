@@ -16,7 +16,8 @@ var carSpeedPlotLayout = {
 
 function reformatTime(dateTime) {
     var dt = dateTime.split('_');
-    var d = dt[0].replace(/-/g, '.');
+    var date = dt[0].split('-');
+    var d = date.reverse().join(".");
     var t = dt[1].replace(/-/g, ':');
 
     return d + ' ' + t;
