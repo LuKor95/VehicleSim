@@ -427,7 +427,7 @@ var createScene = function () {
         /******* Variables and function for animation ******/
 
         var theta = 0;                      // rotation angle
-        var deltaTheta = Math.PI / 252;     // wheel turning per each frame
+        var turnTheta = Math.PI / 252;     // wheel turning per each frame
         var swTheta = Math.PI / 19;         // steering wheel turning per each frame
 
         var D = 0;      // distance translated per frame
@@ -436,8 +436,8 @@ var createScene = function () {
         var A = 5.6;    // distance between front and rear tyre
         var L = 9.4;    // distance between each tyre
         var r = 1.5;    // wheel radius
-        var psi;        // wheel rotation
-        var phi;        // car rotation when turning
+        var wheelRotation;  // wheel rotation
+        var carRotation;    // car rotation when turning
 
         var F;          // frames per second
 
@@ -447,11 +447,11 @@ var createScene = function () {
         var turnBorder = Math.PI / 6;   // maximal turning radius of front wheels
 
 
-        function turnCar(deltaTheta, swTheta) {
-            theta += deltaTheta;
-            pivotFL.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
-            pivotFR.rotate(BABYLON.Axis.Y, deltaTheta, BABYLON.Space.LOCAL);
-            pivotSW.rotate(BABYLON.Axis.X, deltaTheta + swTheta, BABYLON.Space.LOCAL);
+        function turnCar(turnTheta, swTheta) {
+            theta += turnTheta;
+            pivotFL.rotate(BABYLON.Axis.Y, turnTheta, BABYLON.Space.LOCAL);
+            pivotFR.rotate(BABYLON.Axis.Y, turnTheta, BABYLON.Space.LOCAL);
+            pivotSW.rotate(BABYLON.Axis.X, turnTheta + swTheta, BABYLON.Space.LOCAL);
 
             if (Math.abs(theta) > 0.00000001) {
                 NR = A / 2 + L / Math.tan(theta);
@@ -528,19 +528,19 @@ var createScene = function () {
                 }
 
                 if (rightVector < 0.0 && rightVector < theta) {
-                    turnCar(-deltaTheta, -swTheta);
+                    turnCar(-turnTheta, -swTheta);
                 }
 
                 if (rightVector <= 0.0 && rightVector > theta) {
-                    turnCar(deltaTheta, swTheta);
+                    turnCar(turnTheta, swTheta);
                 }
 
                 if (rightVector > 0.0 && rightVector > theta) {
-                    turnCar(deltaTheta, swTheta);
+                    turnCar(turnTheta, swTheta);
                 }
 
                 if (rightVector >= 0.0 && rightVector < theta) {
-                    turnCar(-deltaTheta, -swTheta);
+                    turnCar(-turnTheta, -swTheta);
                 }
 
             } else {
@@ -553,18 +553,18 @@ var createScene = function () {
                 }
 
                 if ((map["a"] || map["A"]) && -Math.PI / 6 < theta) {
-                    turnCar(-deltaTheta, -swTheta);
+                    turnCar(-turnTheta, -swTheta);
                 }
 
                 if ((map["d"] || map["D"]) && theta < Math.PI / 6) {
-                    turnCar(deltaTheta, swTheta);
+                    turnCar(turnTheta, swTheta);
                 }
 
                 if (!(map["a"] || map["A"]) && !(map["d"] || map["D"]) && theta !== 0) {
                     if (theta > 0) {
-                        turnCar(-deltaTheta, -swTheta);
+                        turnCar(-turnTheta, -swTheta);
                     } else if (theta < 0) {
-                        turnCar(deltaTheta, swTheta);
+                        turnCar(turnTheta, swTheta);
                     }
                 }
             }
@@ -579,23 +579,23 @@ var createScene = function () {
             }
 
             var distance = D / F;
-            psi = D / (r * F);
-            phi = D / (R * F);
+            wheelRotation = D / (r * F);
+            carRotation = D / (R * F);
 
             if (theta < 0 || theta > 0) {
-                pivot.rotate(BABYLON.Axis.Y, phi, BABYLON.Space.WORLD);
+                pivot.rotate(BABYLON.Axis.Y, carRotation, BABYLON.Space.WORLD);
 
-                wheelFL.rotate(BABYLON.Axis.Y, psi, BABYLON.Space.LOCAL);
-                wheelFR.rotate(BABYLON.Axis.Y, psi, BABYLON.Space.LOCAL);
-                wheelRL.rotate(BABYLON.Axis.Y, psi, BABYLON.Space.LOCAL);
-                wheelRR.rotate(BABYLON.Axis.Y, psi, BABYLON.Space.LOCAL);
+                wheelFL.rotate(BABYLON.Axis.Y, wheelRotation, BABYLON.Space.LOCAL);
+                wheelFR.rotate(BABYLON.Axis.Y, wheelRotation, BABYLON.Space.LOCAL);
+                wheelRL.rotate(BABYLON.Axis.Y, wheelRotation, BABYLON.Space.LOCAL);
+                wheelRR.rotate(BABYLON.Axis.Y, wheelRotation, BABYLON.Space.LOCAL);
             } else {
                 pivot.translate(BABYLON.Axis.X, -distance, BABYLON.Space.LOCAL);
 
-                wheelFL.rotate(BABYLON.Axis.Y, psi, BABYLON.Space.LOCAL);
-                wheelFR.rotate(BABYLON.Axis.Y, psi, BABYLON.Space.LOCAL);
-                wheelRL.rotate(BABYLON.Axis.Y, psi, BABYLON.Space.LOCAL);
-                wheelRR.rotate(BABYLON.Axis.Y, psi, BABYLON.Space.LOCAL);
+                wheelFL.rotate(BABYLON.Axis.Y, wheelRotation, BABYLON.Space.LOCAL);
+                wheelFR.rotate(BABYLON.Axis.Y, wheelRotation, BABYLON.Space.LOCAL);
+                wheelRL.rotate(BABYLON.Axis.Y, wheelRotation, BABYLON.Space.LOCAL);
+                wheelRR.rotate(BABYLON.Axis.Y, wheelRotation, BABYLON.Space.LOCAL);
             }
 
             // Update text info every frame
