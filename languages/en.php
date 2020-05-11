@@ -46,7 +46,7 @@ $lang = [
     "save" => "Save data",
     "graph1" => "Movement of the car on the map",
     "graph2" => "Dependence of the rate of time",
-    "graph3" => "Movement of buses on the map",
+    "graph3" => "Movement of vehicles on the map",
 ];
 
 ?>

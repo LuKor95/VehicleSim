@@ -46,7 +46,7 @@ $lang = [
     "save" => "Uloženie dát",
     "graph1" => "Pohyb auta po mape",
     "graph2" => "Závislosť rýchlosti od času",
-    "graph3" => "Pohyb autobusov po mape",
+    "graph3" => "Pohyb vozidiel po mape",
 ];
 
 ?>
